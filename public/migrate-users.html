@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Migration - Add User IDs to Subcollections</title>
+  <style>
+    body { font-family: Arial; padding: 20px; background: #f5f5f5; }
+    .container { max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; }
+    button { padding: 10px 20px; background: #14532D; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; }
+    button:disabled { opacity: 0.6; cursor: not-allowed; }
+    #log { margin-top: 20px; padding: 15px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 6px; max-height: 400px; overflow-y: auto; font-family: monospace; font-size: 12px; }
+    .success { color: green; }
+    .error { color: red; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Migration: Add User IDs to Subcollections</h1>
+    <p>This will renumber all existing users sequentially (000001, 000002, etc.) in their subcollections.</p>
+    <button onclick="runMigration()" id="migrateBtn">Start Migration</button>
+    <div id="log"></div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+    import { getFirestore, collection, getDocs, doc, setDoc, deleteField, updateDoc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCfM85FQhBDmonkh4w57rAfpwNB9afXLdQ",
+      authDomain: "manmoon-12.firebaseapp.com",
+      projectId: "manmoon-12",
+      storageBucket: "manmoon-12.firebasestorage.app",
+      messagingSenderId: "484001203292",
+      appId: "1:484001203292:web:f136fedfb8cb0b4c3a9299",
+      measurementId: "G-6YEJJ98KVM"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    window.runMigration = async function() {
+      const btn = document.getElementById('migrateBtn');
+      const log = document.getElementById('log');
+      btn.disabled = true;
+
+      try {
+        log.innerHTML += '<div class="success">Starting migration...</div>';
+        
+        const usersRef = collection(db, 'users');
+        const snapshot = await getDocs(usersRef);
+        let counter = 1;
+
+        for (const userDoc of snapshot.docs) {
+          const userId = userDoc.id;
+          const userData = userDoc.data();
+          const newUserId = String(counter).padStart(6, '0');
+
+          await setDoc(doc(db, 'users', userId, 'users', newUserId), {
+            userId: newUserId,
+            createdAt: new Date().toISOString()
+          });
+
+          if (userData.userId) {
+            await updateDoc(doc(db, 'users', userId), {
+              userId: deleteField()
+            });
+            log.innerHTML += `<div class="success">✓ User ${userId}: Added subcollection with ID ${newUserId}, removed userId field</div>`;
+          } else {
+            log.innerHTML += `<div class="success">✓ User ${userId}: Added subcollection with ID ${newUserId}</div>`;
+          }
+
+          counter++;
+          log.scrollTop = log.scrollHeight;
+        }
+
+        log.innerHTML += `<div class="success"><strong>Migration complete! ${counter - 1} users updated.</strong></div>`;
+      } catch (error) {
+        log.innerHTML += `<div class="error">Error: ${error.message}</div>`;
+      }
+
+      btn.disabled = false;
+    };
+  </script>
+</body>
+</html>

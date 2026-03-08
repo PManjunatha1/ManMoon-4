@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes">
+  <meta name="description" content="Contact ManMoon Support">
+  <title>Contact - ManMoon</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #F0FDF4; color: #052E16; transition: background 0.3s, color 0.3s; }
+    body.dark { background: #052E16; color: #F0FDF4; }
+    .header { background: #FFFFFF; padding: 20px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); display: flex; justify-content: space-between; align-items: center; }
+    body.dark .header { background: #14532D; }
+    .logo { font-size: 24px; font-weight: 600; color: #14532D; }
+    body.dark .logo { color: #4ADE80; }
+    .back-btn { padding: 8px 16px; background: #14532D; color: #FFFFFF; border: none; border-radius: 8px; cursor: pointer; text-decoration: none; }
+    body.dark .back-btn { background: #4ADE80; color: #052E16; }
+    .container { max-width: 900px; margin: 40px auto; padding: 0 20px; }
+    .card { background: #FFFFFF; padding: 40px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); margin-bottom: 20px; }
+    body.dark .card { background: #14532D; }
+    h1 { color: #14532D; font-size: 32px; margin-bottom: 20px; }
+    body.dark h1 { color: #4ADE80; }
+    .contact-info { background: #F0FDF4; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+    body.dark .contact-info { background: #052E16; }
+    .contact-info p { margin: 10px 0; font-size: 16px; }
+    input, textarea { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #14532D; border-radius: 8px; font-size: 14px; }
+    body.dark input, body.dark textarea { background: #052E16; color: #F0FDF4; border-color: #4ADE80; }
+    button { padding: 12px 24px; background: #14532D; color: #FFFFFF; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; }
+    body.dark button { background: #4ADE80; color: #052E16; }
+    footer { text-align: center; padding: 30px 20px; margin-top: 40px; border-top: 1px solid #D1D5DB; }
+    body.dark footer { border-top-color: #166534; }
+    footer a { color: #14532D; text-decoration: none; margin: 0 8px; }
+    body.dark footer a { color: #4ADE80; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">ManMoon</div>
+    <a href="index.html" class="back-btn">← Back to Home</a>
+  </div>
+  <div class="container">
+    <div class="card">
+      <h1>Contact Support</h1>
+      <div class="contact-info">
+        <p><strong>📧 Email:</strong> gamesmanplay12@gmail.com</p>
+        <p><strong>⏱️ Response Time:</strong> Within 24 hours</p>
+        <p><strong>🕐 Available:</strong> Monday - Friday, 9 AM - 6 PM IST</p>
+      </div>
+      <h2 style="color: #14532D; margin-top: 20px;">Send us a Message</h2>
+      <form onsubmit="handleSubmit(event)">
+        <input type="text" placeholder="Your Name" required>
+        <input type="email" placeholder="Your Email" required>
+        <input type="text" placeholder="Subject" required>
+        <textarea placeholder="Your Message" rows="6" required></textarea>
+        <button type="submit">Send Message</button>
+      </form>
+    </div>
+  </div>
+  <footer>
+    <div>© 2026 ManMoon - Secure Learning Platform</div>
+    <div style="margin-top: 8px;">
+      <a href="privacy.html">Privacy Policy</a> | <a href="terms.html">Terms of Service</a> | <a href="about.html">About</a>
+    </div>
+  </footer>
+  <script>
+    if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark');
+    function handleSubmit(e) {
+      e.preventDefault();
+      alert('Thank you for your message! We will get back to you soon.');
+      e.target.reset();
+    }
+  </script>
+</body>
+</html>

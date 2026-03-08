@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes">
+  <meta name="description" content="Watch learning videos on ManMoon">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Watch Video - ManMoon</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #F0FDF4; color: #052E16; min-height: 100vh; transition: background 0.3s, color 0.3s; }
+    body.dark { background: #052E16; color: #F0FDF4; }
+    .container { max-width: 1000px; margin: 30px auto; padding: 0 20px; }
+    .video-container { background: #FFFFFF; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); margin-bottom: 30px; }
+    body.dark .video-container { background: #14532D; }
+    .video-player { width: 100%; aspect-ratio: 16 / 9; background: #000; border-radius: 8px; margin-bottom: 20px; overflow: hidden; position: relative; min-height: 300px; }
+    .video-player iframe { width: 100%; height: calc(100% + 50px); border: none; border-radius: 8px; margin-top: -50px; }
+    .progress-container { background: #F0FDF4; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+    body.dark .progress-container { background: #052E16; }
+    .progress-label { font-size: 14px; font-weight: 600; color: #14532D; margin-bottom: 10px; display: flex; justify-content: space-between; }
+    body.dark .progress-label { color: #4ADE80; }
+    .progress-bar { width: 100%; height: 10px; background: #D1D5DB; border-radius: 5px; overflow: hidden; }
+    body.dark .progress-bar { background: #166534; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, #14532D, #4ADE80); width: 0%; transition: width 0.3s; }
+    .action-buttons { display: flex; gap: 10px; margin-top: 20px; }
+    .action-buttons button { flex: 1; padding: 12px; font-size: 16px; font-weight: 600; background: #14532D; color: #FFFFFF; border: none; border-radius: 8px; cursor: pointer; }
+    body.dark .action-buttons button { background: #4ADE80; color: #052E16; }
+    .btn-secondary { background: #166534; }
+    body.dark .btn-secondary { background: #86EFAC; color: #052E16; }
+    .message { padding: 15px; background: #DCFCE7; color: #166534; border: 1px solid #86EFAC; border-radius: 8px; margin-bottom: 20px; display: none; }
+    body.dark .message { background: #052E16; color: #86EFAC; }
+    .message.show { display: block; }
+    footer { text-align: center; padding: 30px 20px; margin-top: 40px; border-top: 1px solid #D1D5DB; color: #166534; font-size: 14px; }
+    body.dark footer { border-top-color: #166534; color: #86EFAC; }
+    .rotate-btn { display: none; position: fixed; bottom: 20px; right: 20px; width: 50px; height: 50px; background: #14532D; color: #FFFFFF; border: none; border-radius: 50%; font-size: 24px; cursor: pointer; z-index: 1000; }
+    body.dark .rotate-btn { background: #4ADE80; color: #052E16; }
+    @media (max-width: 768px) { .rotate-btn { display: block; } }
+    .video-player.fullscreen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; border-radius: 0; margin: 0; z-index: 999; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <button class="rotate-btn" onclick="toggleFullscreen()">🔄</button>
+    <div id="message" class="message">✅ Video marked as watched! Your progress has been saved.</div>
+
+    <div class="video-container">
+      <div class="video-player" id="videoPlayer">
+        <iframe id="videoFrame" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" sandbox="allow-same-origin allow-scripts allow-fullscreen"></iframe>
+      </div>
+
+      <div class="progress-container">
+        <div class="progress-label">
+          <span>Video Progress</span>
+          <span id="progressPercent">0%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <div class="action-buttons">
+        <button onclick="markAsWatched()">✅ Mark as Watched</button>
+        <button class="btn-secondary" onclick="goBack()">← Return to Dashboard</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div>© 2026 ManMoon - Secure Learning Platform</div>
+  </footer>
+
+  <script>
+    const videos = [
+      'https://odysee.com/$/embed/starting:44?r=5TjB41Ap8MFwLJhuY3Aso4XT9NdQkYuV',
+      'https://odysee.com/$/embed/first:4d?r=5TjB41Ap8MFwLJhuY3Aso4XT9NdQkYuV',
+      'https://odysee.com/$/embed/second:a?r=5TjB41Ap8MFwLJhuY3Aso4XT9NdQkYuV',
+      'https://odysee.com/$/embed/third:37?r=5TjB41Ap8MFwLJhuY3Aso4XT9NdQkYuV',
+      'https://odysee.com/$/embed/fourth:9?r=5TjB41Ap8MFwLJhuY3Aso4XT9NdQkYuV',
+      'https://odysee.com/$/embed/five:60?r=5TjB41Ap8MFwLJhuY3Aso4XT9NdQkYuV'
+    ];
+
+    const levelMap = ['getting-started', 'level-one', 'level-two', 'level-three', 'level-four', 'level-five'];
+    let currentLevel = '';
+
+    function loadVideo() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const vidParam = urlParams.get('vid');
+      const currentVid = vidParam ? parseInt(vidParam) : 0;
+      
+      if (currentVid < 0 || currentVid >= videos.length) {
+        alert('Invalid video');
+        return;
+      }
+      
+      currentLevel = levelMap[currentVid];
+      document.getElementById('videoFrame').src = videos[currentVid];
+      updateProgress();
+    }
+
+    function updateProgress() {
+      const watched = JSON.parse(localStorage.getItem('watchedVideos') || '{}');
+      const isWatched = watched[currentLevel] ? 100 : 0;
+      document.getElementById('progressFill').style.width = isWatched + '%';
+      document.getElementById('progressPercent').textContent = isWatched + '%';
+    }
+
+    function markAsWatched() {
+      const watched = JSON.parse(localStorage.getItem('watchedVideos') || '{}');
+      watched[currentLevel] = true;
+      localStorage.setItem('watchedVideos', JSON.stringify(watched));
+      updateProgress();
+      const msg = document.getElementById('message');
+      msg.classList.add('show');
+      setTimeout(() => msg.classList.remove('show'), 3000);
+    }
+
+    function goBack() {
+      window.location.href = 'dashboard.html';
+    }
+
+    function toggleFullscreen() {
+      const videoPlayer = document.getElementById('videoPlayer');
+      videoPlayer.classList.toggle('fullscreen');
+    }
+
+    window.addEventListener('orientationchange', () => {
+      const videoPlayer = document.getElementById('videoPlayer');
+      if (window.innerHeight < window.innerWidth) {
+        videoPlayer.classList.add('fullscreen');
+      } else {
+        videoPlayer.classList.remove('fullscreen');
+      }
+    });
+
+    if (localStorage.getItem('theme') === 'dark') {
+      document.body.classList.add('dark');
+    }
+
+    loadVideo();
+  </script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes">
+  <meta name="description" content="About ManMoon - Learn about our mission and values">
+  <title>About - ManMoon</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #F0FDF4; color: #052E16; transition: background 0.3s, color 0.3s; }
+    body.dark { background: #052E16; color: #F0FDF4; }
+    .header { background: #FFFFFF; padding: 20px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); display: flex; justify-content: space-between; align-items: center; }
+    body.dark .header { background: #14532D; }
+    .logo { font-size: 24px; font-weight: 600; color: #14532D; }
+    body.dark .logo { color: #4ADE80; }
+    .back-btn { padding: 8px 16px; background: #14532D; color: #FFFFFF; border: none; border-radius: 8px; cursor: pointer; text-decoration: none; }
+    body.dark .back-btn { background: #4ADE80; color: #052E16; }
+    .container { max-width: 900px; margin: 40px auto; padding: 0 20px; }
+    .card { background: #FFFFFF; padding: 40px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); margin-bottom: 20px; }
+    body.dark .card { background: #14532D; }
+    h1 { color: #14532D; font-size: 32px; margin-bottom: 20px; }
+    body.dark h1 { color: #4ADE80; }
+    h2 { color: #14532D; font-size: 24px; margin-top: 20px; margin-bottom: 12px; }
+    body.dark h2 { color: #4ADE80; }
+    p { line-height: 1.8; margin-bottom: 16px; color: #166534; }
+    body.dark p { color: #86EFAC; }
+    footer { text-align: center; padding: 30px 20px; margin-top: 40px; border-top: 1px solid #D1D5DB; }
+    body.dark footer { border-top-color: #166534; }
+    footer a { color: #14532D; text-decoration: none; margin: 0 8px; }
+    body.dark footer a { color: #4ADE80; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">ManMoon</div>
+    <a href="index.html" class="back-btn">← Back to Home</a>
+  </div>
+  <div class="container">
+    <div class="card">
+      <h1>About ManMoon</h1>
+      <h2>Our Mission</h2>
+      <p>ManMoon is dedicated to making quality education accessible to everyone. We believe that learning should be affordable, secure, and empowering.</p>
+      <h2>What We Offer</h2>
+      <p>We provide comprehensive courses on Android app development, from beginner to advanced levels. Our platform teaches you how to build, monetize, and publish apps on the Google Play Store.</p>
+      <h2>Why Choose ManMoon?</h2>
+      <p>✅ Affordable pricing - Just ₹100 for lifetime access</p>
+      <p>✅ Comprehensive curriculum - 6 levels of learning</p>
+      <p>✅ Secure platform - SSL encrypted, no data sharing</p>
+      <p>✅ Lifetime support - Email assistance available</p>
+      <p>✅ No hidden fees - One-time payment, unlimited learning</p>
+      <h2>Our Values</h2>
+      <p><strong>Transparency:</strong> We're honest about what you get and how much it costs.</p>
+      <p><strong>Security:</strong> Your data is encrypted and protected.</p>
+      <p><strong>Accessibility:</strong> Quality education should be affordable for everyone.</p>
+      <p><strong>Support:</strong> We're here to help you succeed.</p>
+    </div>
+  </div>
+  <footer>
+    <div>© 2026 ManMoon - Secure Learning Platform</div>
+    <div style="margin-top: 8px;">
+      <a href="privacy.html">Privacy Policy</a> | <a href="terms.html">Terms of Service</a> | <a href="contact.html">Contact Support</a>
+    </div>
+  </footer>
+  <script>
+    if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark');
+  </script>
+</body>
+</html>

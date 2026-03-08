@@ -1,0 +1,469 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes">
+  <meta name="description" content="ManMoon - Safe and secure online learning platform for skill development">
+  <meta name="author" content="ManMoon">
+  <meta name="robots" content="index, follow">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="canonical" href="https://manmoon.com">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#14532D">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="ManMoon">
+  <title>ManMoon - Safe Online Learning Platform</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #F0FDF4;
+      color: #052E16;
+      transition: background 0.3s, color 0.3s;
+    }
+    body.dark {
+      background: #052E16;
+      color: #F0FDF4;
+    }
+    .nav {
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .logo {
+      font-size: 24px;
+      font-weight: 600;
+      color: #14532D;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .logo::before {
+      content: '';
+      width: 32px;
+      height: 32px;
+      background: url('image/image.png') center/contain no-repeat;
+      display: inline-block;
+    }
+    body.dark .logo {
+      color: #4ADE80;
+    }
+    .theme-toggle {
+      background: #14532D;
+      color: #FFFFFF;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    body.dark .theme-toggle {
+      background: #4ADE80;
+      color: #052E16;
+    }
+    .hero {
+      text-align: center;
+      padding: 60px 20px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    h1 {
+      font-size: 48px;
+      color: #14532D;
+      margin-bottom: 16px;
+    }
+    body.dark h1 {
+      color: #4ADE80;
+    }
+    .subtitle {
+      font-size: 20px;
+      color: #166534;
+      margin-bottom: 24px;
+    }
+    body.dark .subtitle {
+      color: #86EFAC;
+    }
+    .safety-badge {
+      display: inline-block;
+      background: #FFFFFF;
+      padding: 16px 24px;
+      border-radius: 8px;
+      margin: 20px 0;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    body.dark .safety-badge {
+      background: #14532D;
+    }
+    .safety-badge strong {
+      color: #14532D;
+      font-size: 16px;
+    }
+    body.dark .safety-badge strong {
+      color: #4ADE80;
+    }
+    .cta {
+      display: inline-block;
+      padding: 16px 32px;
+      background: #14532D;
+      color: #FFFFFF;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 500;
+      font-size: 18px;
+      margin-top: 20px;
+    }
+    body.dark .cta {
+      background: #4ADE80;
+      color: #052E16;
+    }
+    .about {
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 40px 20px;
+      background: #FFFFFF;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+    body.dark .about {
+      background: #14532D;
+    }
+    .about h2 {
+      color: #14532D;
+      margin-bottom: 16px;
+      font-size: 28px;
+    }
+    body.dark .about h2 {
+      color: #4ADE80;
+    }
+    .about p {
+      margin-bottom: 16px;
+      line-height: 1.8;
+    }
+    .features {
+      max-width: 1000px;
+      margin: 60px auto;
+      padding: 0 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 30px;
+    }
+    .feature {
+      background: #FFFFFF;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+    body.dark .feature {
+      background: #14532D;
+    }
+    .feature h3 {
+      color: #14532D;
+      margin-bottom: 12px;
+      font-size: 20px;
+    }
+    body.dark .feature h3 {
+      color: #4ADE80;
+    }
+    .security-info {
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 30px;
+      background: #F0FDF4;
+      border: 2px solid #14532D;
+      border-radius: 12px;
+    }
+    body.dark .security-info {
+      background: #052E16;
+      border-color: #4ADE80;
+    }
+    .security-info h3 {
+      color: #14532D;
+      margin-bottom: 16px;
+    }
+    body.dark .security-info h3 {
+      color: #4ADE80;
+    }
+    .security-info ul {
+      list-style: none;
+      padding: 0;
+    }
+    .security-info li {
+      padding: 8px 0;
+      color: #166534;
+    }
+    body.dark .security-info li {
+      color: #86EFAC;
+    }
+    footer {
+      text-align: center;
+      padding: 40px 20px;
+      margin-top: 60px;
+      border-top: 1px solid #D1D5DB;
+    }
+    body.dark footer {
+      border-top-color: #166534;
+    }
+    footer a {
+      color: #14532D;
+      text-decoration: none;
+      margin: 0 12px;
+    }
+    body.dark footer a {
+      color: #4ADE80;
+    }
+    .install-prompt {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #FFFFFF;
+      padding: 16px 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      display: none;
+      gap: 12px;
+      align-items: center;
+      z-index: 1000;
+      max-width: 300px;
+    }
+    body.dark .install-prompt {
+      background: #14532D;
+    }
+    .install-prompt.show {
+      display: flex;
+    }
+    .install-prompt button {
+      background: #14532D;
+      color: #FFFFFF;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    body.dark .install-prompt button {
+      background: #4ADE80;
+      color: #052E16;
+    }
+    .install-prompt .close-btn {
+      background: none;
+      color: #14532D;
+      padding: 0;
+      font-size: 20px;
+    }
+    body.dark .install-prompt .close-btn {
+      color: #4ADE80;
+    }
+    @media (max-width: 768px) {
+      .nav {
+        padding: 15px;
+      }
+      .logo {
+        font-size: 20px;
+      }
+      .logo::before {
+        width: 24px;
+        height: 24px;
+      }
+      .theme-toggle {
+        padding: 10px 14px;
+        font-size: 13px;
+      }
+      .hero {
+        padding: 40px 15px;
+      }
+      h1 {
+        font-size: 32px;
+      }
+      .subtitle {
+        font-size: 17px;
+      }
+      .safety-badge {
+        padding: 14px 18px;
+        font-size: 13px;
+      }
+      .safety-badge strong {
+        font-size: 14px;
+      }
+      .cta {
+        padding: 14px 28px;
+        font-size: 16px;
+      }
+      .about {
+        padding: 25px 18px;
+        margin: 30px 15px;
+      }
+      .about h2 {
+        font-size: 24px;
+      }
+      .about p {
+        font-size: 15px;
+      }
+      .security-info {
+        margin: 30px 15px;
+        padding: 20px;
+      }
+      .security-info h3 {
+        font-size: 18px;
+      }
+      .security-info li {
+        font-size: 14px;
+      }
+      .features {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        padding: 0 15px;
+        margin: 40px auto;
+      }
+      .feature {
+        padding: 24px;
+      }
+      .feature h3 {
+        font-size: 18px;
+      }
+      footer {
+        padding: 30px 15px;
+        font-size: 13px;
+      }
+      footer a {
+        display: inline-block;
+        margin: 6px 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="logo">ManMoon</div>
+    <button class="theme-toggle" onclick="toggleTheme()">🌓 Toggle Theme</button>
+  </nav>
+
+  <div class="hero">
+    <h1>Welcome to ManMoon</h1>
+    <p class="subtitle">Your Safe & Trusted Online Learning Platform</p>
+    <div class="safety-badge">
+      <strong>✅ 100% Safe & Secure</strong> • SSL Encrypted • No Malware • Privacy Protected
+    </div>
+    <br>
+    <a href="signin.html" class="cta">Get Started - Sign In</a>
+  </div>
+
+  <div class="about">
+    <h2>About ManMoon Learning Platform</h2>
+    <p><strong>ManMoon is a legitimate online learning platform</strong> designed to help students and professionals develop new skills through quality educational content.</p>
+    <p>We provide a safe, secure environment for online learning with courses in various subjects including technology, business, creative arts, and personal development.</p>
+    <p><strong>Our Mission:</strong> To make quality education accessible to everyone through a secure, user-friendly platform that respects your privacy and protects your data.</p>
+  </div>
+
+  <div class="security-info">
+    <h3>🔒 Why ManMoon is Safe</h3>
+    <ul>
+      <li>✅ <strong>SSL/HTTPS Encryption:</strong> All data transmitted is encrypted</li>
+      <li>✅ <strong>No Malware:</strong> Clean code, no viruses or harmful scripts</li>
+      <li>✅ <strong>Privacy First:</strong> We don't sell your data</li>
+      <li>✅ <strong>Secure Authentication:</strong> Password encryption and secure login</li>
+      <li>✅ <strong>Transparent:</strong> Clear Privacy Policy and Terms of Service</li>
+      <li>✅ <strong>No Hidden Fees:</strong> Honest pricing, no surprise charges</li>
+      <li>✅ <strong>Contact Available:</strong> Real support at gamesmanplay12@gmail.com</li>
+    </ul>
+  </div>
+
+  <div class="features">
+    <div class="feature">
+      <h3>🎓 Quality Learning</h3>
+      <p>Access high-quality courses designed by experts to help you master new skills in a safe environment.</p>
+    </div>
+    <div class="feature">
+      <h3>🔒 Secure Platform</h3>
+      <p>Your data is protected with industry-standard SSL encryption and secure authentication systems.</p>
+    </div>
+    <div class="feature">
+      <h3>📱 Learn Anywhere</h3>
+      <p>Study on any device with our mobile-friendly responsive platform. No downloads required.</p>
+    </div>
+    <div class="feature">
+      <h3>🛡️ Privacy Protected</h3>
+      <p>We respect your privacy. No data selling, no tracking, no spam. Your information stays safe.</p>
+    </div>
+  </div>
+
+  <div class="install-prompt" id="installPrompt">
+    <span>Install ManMoon app on your device</span>
+    <button onclick="installApp()">Install</button>
+    <button class="close-btn" onclick="closeInstallPrompt()">✕</button>
+  </div>
+      <a href="privacy.html">Privacy Policy</a> |
+      <a href="terms.html">Terms of Service</a> |
+      <a href="refund.html">Refund Policy</a> |
+      <a href="contact.html">Contact Support</a> |
+      <a href="about.html">About Us</a>
+    </div>
+    <div style="margin-top: 12px; font-size: 12px; color: #166534;">
+      © 2026 ManMoon. All rights reserved. | Secure Learning Platform
+    </div>
+  </footer>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-analytics.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCfM85FQhBDmonkh4w57rAfpwNB9afXLdQ",
+      authDomain: "manmoon-12.firebaseapp.com",
+      projectId: "manmoon-12",
+      storageBucket: "manmoon-12.firebasestorage.app",
+      messagingSenderId: "484001203292",
+      appId: "1:484001203292:web:f136fedfb8cb0b4c3a9299",
+      measurementId: "G-6YEJJ98KVM"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+
+    // Check if user is already logged in
+    if (localStorage.getItem('userName')) {
+      window.location.href = 'dashboard.html';
+    }
+  </script>
+
+  <script>
+    function toggleTheme() {
+      document.body.classList.toggle('dark');
+      localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+    }
+    if (localStorage.getItem('theme') === 'dark') {
+      document.body.classList.add('dark');
+    }
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    }
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      document.getElementById('installPrompt').classList.add('show');
+    });
+    function installApp() {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then(() => {
+          deferredPrompt = null;
+          closeInstallPrompt();
+        });
+      }
+    }
+    function closeInstallPrompt() {
+      document.getElementById('installPrompt').classList.remove('show');
+    }
+  </script>
+</body>
+</html>

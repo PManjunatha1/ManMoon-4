@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes">
+  <meta name="description" content="ManMoon Dashboard - Your Learning Hub">
+  <title>Dashboard - ManMoon</title>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <style>
+    body { display: none; }
+    body.verified { display: block; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #F0FDF4; color: #052E16; min-height: 100vh; transition: background 0.3s, color 0.3s; }
+    body.dark { background: #052E16; color: #F0FDF4; }
+    .header { background: #FFFFFF; padding: 20px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); display: flex; justify-content: space-between; align-items: center; }
+    body.dark .header { background: #14532D; }
+    .logo { font-size: 24px; font-weight: 600; color: #14532D; display: flex; align-items: center; gap: 8px; }
+    body.dark .logo { color: #4ADE80; }
+    .logo::before { content: ''; width: 32px; height: 32px; background: url('image/image.png') center/contain no-repeat; display: inline-block; }
+    .mobile-menu-btn { display: none; background: #14532D; color: #FFFFFF; border: none; padding: 10px 16px; border-radius: 8px; font-size: 24px; cursor: pointer; }
+    body.dark .mobile-menu-btn { background: #4ADE80; color: #052E16; }
+    .mobile-menu { display: none; position: fixed; top: 70px; right: 20px; width: 250px; background: #FFFFFF; box-shadow: 0 4px 12px rgba(0,0,0,0.2); border-radius: 12px; transition: all 0.3s; z-index: 1000; padding: 16px; opacity: 0; transform: translateY(-10px); pointer-events: none; }
+    body.dark .mobile-menu { background: #14532D; }
+    .mobile-menu.active { opacity: 1; transform: translateY(0); pointer-events: auto; }
+    .mobile-menu-item { display: flex; align-items: center; gap: 12px; padding: 14px; margin-bottom: 8px; background: #F0FDF4; border: 2px solid #14532D; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; color: #052E16; transition: all 0.2s; }
+    body.dark .mobile-menu-item { background: #052E16; color: #F0FDF4; border-color: #4ADE80; }
+    .mobile-menu-item:hover { background: #14532D; color: #FFFFFF; transform: scale(1.02); }
+    body.dark .mobile-menu-item:hover { background: #4ADE80; color: #052E16; }
+    .user-info { display: flex; align-items: center; gap: 16px; }
+    .user-name { font-weight: 500; color: #14532D; }
+    body.dark .user-name { color: #4ADE80; }
+    .theme-toggle { padding: 8px 16px; background: #14532D; color: #FFFFFF; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; margin-right: 8px; }
+    body.dark .theme-toggle { background: #4ADE80; color: #052E16; }
+    .profile-btn { padding: 8px 16px; background: #166534; color: #FFFFFF; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; margin-right: 8px; }
+    body.dark .profile-btn { background: #86EFAC; color: #052E16; }
+    .logout-btn { padding: 8px 16px; background: #14532D; color: #FFFFFF; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; }
+    body.dark .logout-btn { background: #4ADE80; color: #052E16; }
+    .dashboard-container { display: flex; max-width: 1400px; margin: 0 auto; padding: 20px; gap: 20px; }
+    .content-area { flex: 0 0 70%; background: #FFFFFF; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); }
+    body.dark .content-area { background: #14532D; }
+    .sidebar { flex: 0 0 30%; display: flex; flex-direction: column; gap: 12px; height: fit-content; position: sticky; top: 20px; }
+    .nav-button { padding: 16px 20px; background: #FFFFFF; color: #052E16; border: 2px solid #14532D; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s; text-align: left; }
+    body.dark .nav-button { background: #052E16; color: #F0FDF4; border-color: #4ADE80; }
+    .nav-button:hover { background: #14532D; color: #FFFFFF; transform: translateX(-5px); }
+    body.dark .nav-button:hover { background: #4ADE80; color: #052E16; }
+    .nav-button.active { background: #14532D; color: #FFFFFF; }
+    body.dark .nav-button.active { background: #4ADE80; color: #052E16; }
+    .content-section { display: none; }
+    .content-section.active { display: block; }
+    .content-section h2 { color: #14532D; font-size: 28px; margin-bottom: 16px; }
+    body.dark .content-section h2 { color: #4ADE80; }
+    .content-section p { line-height: 1.8; margin-bottom: 16px; color: #166534; }
+    body.dark .content-section p { color: #86EFAC; }
+    .pricing-box { background: linear-gradient(135deg, #14532D, #166534); color: #FFFFFF; padding: 24px; border-radius: 12px; margin-bottom: 20px; }
+    body.dark .pricing-box { background: linear-gradient(135deg, #4ADE80, #86EFAC); color: #052E16; }
+    .pricing-box h3 { font-size: 24px; margin-bottom: 16px; }
+    .pricing-box ul { list-style: none; padding: 0; }
+    .pricing-box li { padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.2); }
+    body.dark .pricing-box li { border-bottom-color: rgba(5,46,22,0.2); }
+    .pricing-box li:last-child { border-bottom: none; }
+    .pay-btn { display: inline-block; margin-top: 20px; padding: 14px 32px; background: #14532D; color: #FFFFFF; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+    body.dark .pay-btn { background: #4ADE80; color: #052E16; }
+    .pay-btn:hover { background: #166534; transform: scale(1.05); }
+    .video-btn { display: inline-block; margin-top: 20px; padding: 12px 24px; background: #14532D; color: #FFFFFF; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+    body.dark .video-btn { background: #4ADE80; color: #052E16; }
+    .video-btn:hover { background: #166534; transform: scale(1.05); }
+    .progress-container { margin-bottom: 20px; padding: 15px; background: #F0FDF4; border-radius: 8px; }
+    body.dark .progress-container { background: #052E16; }
+    .progress-label { font-size: 14px; font-weight: 600; color: #14532D; margin-bottom: 8px; display: flex; justify-content: space-between; }
+    body.dark .progress-label { color: #4ADE80; }
+    .progress-bar { width: 100%; height: 10px; background: #D1D5DB; border-radius: 5px; overflow: hidden; }
+    body.dark .progress-bar { background: #166534; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, #14532D, #4ADE80); transition: width 0.3s; }
+    .install-btn { display: inline-block; margin-top: 10px; padding: 10px 20px; background: #166534; color: #FFFFFF; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+    body.dark .install-btn { background: #86EFAC; color: #052E16; }
+    .install-btn:hover { background: #14532D; transform: scale(1.05); }
+    .install-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    @media (max-width: 968px) {
+      .user-info > button:not(.mobile-menu-btn) { display: none; }
+      .mobile-menu-btn { display: block !important; }
+      .mobile-menu { display: block !important; }
+      .dashboard-container { flex-direction: column-reverse; }
+      .content-area { flex: 1; }
+      .sidebar { flex: 1; flex-direction: row; flex-wrap: wrap; }
+      .nav-button { flex: 1 1 calc(50% - 6px); }
+    }
+    @media (max-width: 600px) {
+      .sidebar { flex-direction: column; }
+      .nav-button { flex: 1; }
+      .content-area { padding: 20px; }
+    }
+    footer { text-align: center; padding: 30px 20px; margin-top: 40px; border-top: 1px solid #D1D5DB; color: #166534; font-size: 14px; }
+    body.dark footer { border-top-color: #166534; color: #86EFAC; }
+    footer a { color: #14532D; text-decoration: none; margin: 0 8px; }
+    body.dark footer a { color: #4ADE80; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="menu-overlay" id="menuOverlay" onclick="toggleMobileMenu()"></div>
+  <div class="mobile-menu" id="mobileMenu">
+    <div class="mobile-menu-header">
+      <span style="font-weight: 600; font-size: 18px; color: #14532D;" class="menu-title">Menu</span>
+      <button class="mobile-menu-close" onclick="toggleMobileMenu()">✕</button>
+    </div>
+    <div class="mobile-menu-item" onclick="window.location.href='profile.html'">👤 Profile</div>
+    <div class="mobile-menu-item" onclick="toggleTheme(); toggleMobileMenu();">🌓 Toggle Mode</div>
+    <div class="mobile-menu-item" onclick="logout()">🚪 Logout</div>
+  </div>
+
+  <div class="header">
+    <div class="logo">ManMoon</div>
+    <div class="user-info">
+      <span class="user-name" id="userName">Welcome</span>
+      <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+      <button class="install-btn" id="installBtn" onclick="installApp()" style="display:none;">📱 Install App</button>
+      <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
+      <button class="profile-btn" onclick="window.location.href='profile.html'">👤 Profile</button>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+  </div>
+
+  <div class="dashboard-container">
+    <div class="content-area">
+      <div id="getting-started" class="content-section active">
+        <div class="progress-container">
+          <div class="progress-label"><span>Getting Started Progress</span><span id="gs-percent">0%</span></div>
+          <div class="progress-bar"><div class="progress-fill" id="gs-progress" style="width: 0%"></div></div>
+        </div>
+        <h2>🚀 Getting Started</h2>
+        <p>Welcome to ManMoon Learning Platform! We're excited to have you here.</p>
+        <p>🔹 Video Main Topic.</p>
+        <p><strong>1️⃣ Android Studio Setup</strong></p>
+        <p>2️⃣Firebase Connection</p>
+        <p>3️⃣ AdMob</p>
+        <p>4️⃣ Play Store</p>
+        <button class="video-btn" onclick="window.location.href='video-embed.html?vid=0'">▶️ Watch Video</button>
+      </div>
+
+      <div id="level-one" class="content-section">
+        <div class="progress-container">
+          <div class="progress-label"><span>Level One Progress</span><span id="l1-percent">0%</span></div>
+          <div class="progress-bar"><div class="progress-fill" id="l1-progress" style="width: 0%"></div></div>
+        </div>
+        <h2>📚 Level One - Foundations</h2>
+        <p>Welcome to Level One! This is where your learning journey begins.</p>
+        <p><strong>What you'll learn:</strong></p>
+        <p>1️⃣ Android Studio Basics</p>
+        <p>2️⃣ How to Generate APK</p>
+        <p>3️⃣ How to Fix Errors</p>
+        <p>4️⃣ How to Use AI in Android Studio</p>
+        <button class="video-btn" onclick="window.location.href='video-embed.html?vid=1'">▶️ Watch Video</button>
+      </div>
+
+      <div id="level-two" class="content-section">
+        <div class="progress-container">
+          <div class="progress-label"><span>Level Two Progress</span><span id="l2-percent">0%</span></div>
+          <div class="progress-bar"><div class="progress-fill" id="l2-progress" style="width: 0%"></div></div>
+        </div>
+        <h2>🎯 Level Two - Intermediate</h2>
+        <p>1️⃣.Android Studio</p>
+        <p>2️⃣ Create App Using AI</p>
+        <p>3️⃣ Files & Layout</p>
+        <p>4️⃣ Add Images</p>
+        <p>5️⃣ Run & Fix Errors</p>
+        <button class="video-btn" onclick="window.location.href='video-embed.html?vid=2'">▶️ Watch Video</button>
+      </div>
+
+      <div id="level-three" class="content-section">
+        <div class="progress-container">
+          <div class="progress-label"><span>Level Three Progress</span><span id="l3-percent">0%</span></div>
+          <div class="progress-bar"><div class="progress-fill" id="l3-progress" style="width: 0%"></div></div>
+        </div>
+        <h2>⚡ Level Three - Advanced</h2>
+        <p>You've made it to Level Three - Advanced concepts await!</p>
+        <p>1️⃣ Create AdMob Account</p>
+        <p>2️⃣ Add App in AdMob</p>
+        <p>3️⃣ Add AdMob SDK</p>
+        <p>4️⃣ Update Manifest</p>
+        <p>5️⃣ Add Ads Code</p>
+        <button class="video-btn" onclick="window.location.href='video-embed.html?vid=3'">▶️ Watch Video</button>
+      </div>
+
+      <div id="level-four" class="content-section">
+        <div class="progress-container">
+          <div class="progress-label"><span>Level Four Progress</span><span id="l4-percent">0%</span></div>
+          <div class="progress-bar"><div class="progress-fill" id="l4-progress" style="width: 0%"></div></div>
+        </div>
+        <h2>🏆 Level Four - Expert</h2>
+        <p>Welcome to Level Four -</p>
+        <p>1️⃣ Open Developer Console</p>
+        <p>2️⃣ Pay Registration Fee</p>
+        <p>3️⃣ Create Profile</p>
+        <p>4️⃣ Website & App Details</p>
+        <p>5️⃣ Final Details</p>
+        <button class="video-btn" onclick="window.location.href='video-embed.html?vid=4'">▶️ Watch Video</button>
+      </div>
+
+      <div id="level-five" class="content-section">
+        <div class="progress-container">
+          <div class="progress-label"><span>Level Five Progress</span><span id="l5-percent">0%</span></div>
+          <div class="progress-bar"><div class="progress-fill" id="l5-progress" style="width: 0%"></div></div>
+        </div>
+        <h2>🌟 Level Five - Mastery</h2>
+        <p>Congratulations! You've reached the final level</p>
+        <p>1️⃣ Before Design</p>
+        <p>2️⃣ Real Content Required</p>
+        <p>3️⃣ Ads Placement Rules</p>
+        <p>4️⃣ Avoid These Words</p>
+        <p>5️⃣ Privacy Policy Must</p>
+        <button class="video-btn" onclick="window.location.href='video-embed.html?vid=5'">▶️ Watch Video</button>
+      </div>
+    </div>
+
+    <div class="sidebar">
+      <button class="nav-button active" onclick="showSection('getting-started', this)">🚀 Getting Started</button>
+      <button class="nav-button" onclick="showSection('level-one', this)">📚 Level One</button>
+      <button class="nav-button" onclick="showSection('level-two', this)">🎯 Level Two</button>
+      <button class="nav-button" onclick="showSection('level-three', this)">⚡ Level Three</button>
+      <button class="nav-button" onclick="showSection('level-four', this)">🏆 Level Four</button>
+      <button class="nav-button" onclick="showSection('level-five', this)">🌟 Level Five</button>
+    </div>
+  </div>
+
+  <footer>
+    <div>© 2026 ManMoon - Secure Learning Platform</div>
+    <div style="margin-top: 8px;">
+      <a href="privacy.html">Privacy Policy</a> | <a href="terms.html">Terms of Service</a> | <a href="refund.html">Refund Policy</a> | <a href="contact.html">Contact Support</a>
+    </div>
+  </footer>
+
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCfM85FQhBDmonkh4w57rAfpwNB9afXLdQ",
+      authDomain: "manmoon-12.firebaseapp.com",
+      projectId: "manmoon-12",
+      storageBucket: "manmoon-12.firebasestorage.app",
+      messagingSenderId: "484001203292",
+      appId: "1:484001203292:web:f136fedfb8cb0b4c3a9299",
+      measurementId: "G-6YEJJ98KVM"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    async function checkPaymentStatus() {
+      const userId = localStorage.getItem('userId');
+      if (!userId) {
+        window.location.href = 'signin.html';
+        return;
+      }
+      
+      const userDoc = await getDoc(doc(db, 'users', userId));
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        const storedToken = localStorage.getItem('sessionToken');
+        const dbToken = userData.sessionToken;
+        
+        if (storedToken !== dbToken) {
+          localStorage.clear();
+          alert('Your session has been invalidated. You were signed in on another device.');
+          window.location.href = 'signin.html';
+          return;
+        }
+        
+        if (userData.paymentStatus !== 'paid') {
+          window.location.replace('subscribe.html');
+          return;
+        }
+      } else {
+        window.location.href = 'signin.html';
+      }
+      
+      document.body.classList.add('verified');
+    }
+
+    async function verifySession() {
+      const userId = localStorage.getItem('userId');
+      const sessionToken = localStorage.getItem('sessionToken');
+      
+      if (!userId || !sessionToken) {
+        localStorage.clear();
+        window.location.href = 'signin.html';
+        return;
+      }
+      
+      const userDoc = await getDoc(doc(db, 'users', userId));
+      if (!userDoc.exists() || userDoc.data().sessionToken !== sessionToken) {
+        localStorage.clear();
+        window.location.href = 'signin.html';
+      }
+    }
+
+    checkPaymentStatus();
+    verifySession();
+
+    let deferredPrompt;
+    const levels = ['getting-started', 'level-one', 'level-two', 'level-three', 'level-four', 'level-five'];
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const userName = localStorage.getItem('userName');
+      document.getElementById('userName').textContent = `Welcome, ${userName}`;
+      updateAllProgress();
+    });
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      document.getElementById('installBtn').style.display = 'inline-block';
+    });
+
+    window.installApp = function() {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            console.log('App installed');
+          }
+          deferredPrompt = null;
+          document.getElementById('installBtn').style.display = 'none';
+        });
+      }
+    }
+  </script>
+
+  <script>
+    window.markWatched = function(levelId) {
+      const watched = JSON.parse(localStorage.getItem('watchedVideos') || '{}');
+      watched[levelId] = true;
+      localStorage.setItem('watchedVideos', JSON.stringify(watched));
+      localStorage.setItem('lastWatchedLevel', levelId);
+      updateAllProgress();
+    };
+
+    window.updateAllProgress = function() {
+      const watched = JSON.parse(localStorage.getItem('watchedVideos') || '{}');
+      const idMap = {'getting-started': 'gs', 'level-one': 'l1', 'level-two': 'l2', 'level-three': 'l3', 'level-four': 'l4', 'level-five': 'l5'};
+      const levels = ['getting-started', 'level-one', 'level-two', 'level-three', 'level-four', 'level-five'];
+      levels.forEach(level => {
+        const percent = watched[level] ? 100 : 0;
+        const id = idMap[level];
+        const progressBar = document.getElementById(id + '-progress');
+        const percentLabel = document.getElementById(id + '-percent');
+        if (progressBar) {
+          progressBar.style.width = percent + '%';
+          percentLabel.textContent = percent + '%';
+        }
+      });
+    };
+
+    window.showSection = function(sectionId, button) {
+      document.querySelectorAll('.content-section').forEach(section => {
+        section.classList.remove('active');
+      });
+      document.querySelectorAll('.nav-button').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      document.getElementById(sectionId).classList.add('active');
+      button.classList.add('active');
+    };
+
+    window.toggleMobileMenu = function() {
+      document.getElementById('mobileMenu').classList.toggle('active');
+      document.getElementById('menuOverlay').classList.toggle('active');
+    };
+
+    window.logout = function() {
+      localStorage.clear();
+      window.location.href = 'index.html';
+    };
+
+    window.toggleTheme = function() {
+      document.body.classList.toggle('dark');
+      localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+    };
+    
+    if (localStorage.getItem('theme') === 'dark') {
+      document.body.classList.add('dark');
+    }
+  </script>
+</body>
+</html>

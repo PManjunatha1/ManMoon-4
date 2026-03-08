@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes">
+  <meta name="description" content="ManMoon secure login - Safe authentication for your learning account">
+  <meta name="author" content="ManMoon">
+  <meta name="robots" content="noindex, nofollow">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Secure Login - ManMoon Learning Platform</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #F0FDF4;
+      color: #052E16;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      transition: background 0.3s, color 0.3s;
+    }
+    body.dark {
+      background: #052E16;
+      color: #F0FDF4;
+    }
+    .top-nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: space-between;
+      padding: 20px;
+      background: transparent;
+    }
+    .back-link {
+      color: #14532D;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 16px;
+    }
+    body.dark .back-link {
+      color: #4ADE80;
+    }
+    .theme-toggle {
+      background: #14532D;
+      color: #FFFFFF;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    body.dark .theme-toggle {
+      background: #4ADE80;
+      color: #052E16;
+    }
+    .container {
+      width: 100%;
+      max-width: 450px;
+      margin-top: 60px;
+    }
+    .safety-banner {
+      background: #FFFFFF;
+      padding: 16px;
+      border-radius: 8px;
+      text-align: center;
+      margin-bottom: 20px;
+      border: 2px solid #14532D;
+    }
+    body.dark .safety-banner {
+      background: #14532D;
+      border-color: #4ADE80;
+    }
+    .safety-banner strong {
+      color: #14532D;
+      font-size: 14px;
+    }
+    body.dark .safety-banner strong {
+      color: #4ADE80;
+    }
+    .card {
+      background: #FFFFFF;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+    body.dark .card {
+      background: #14532D;
+    }
+    .logo {
+      font-size: 32px;
+      font-weight: 600;
+      color: #14532D;
+      text-align: center;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .logo::before {
+      content: '';
+      width: 36px;
+      height: 36px;
+      background: url('image/image.png') center/contain no-repeat;
+      display: inline-block;
+    }
+    body.dark .logo {
+      color: #4ADE80;
+    }
+    h1 {
+      font-size: 26px;
+      font-weight: 600;
+      color: #052E16;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+    body.dark h1 {
+      color: #F0FDF4;
+    }
+    .subtitle {
+      text-align: center;
+      color: #166534;
+      font-size: 14px;
+      margin-bottom: 32px;
+    }
+    body.dark .subtitle {
+      color: #86EFAC;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      font-size: 14px;
+      font-weight: 500;
+      color: #052E16;
+      margin-bottom: 6px;
+    }
+    body.dark label {
+      color: #F0FDF4;
+    }
+    input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid #D1D5DB;
+      border-radius: 8px;
+      font-size: 15px;
+      color: #052E16;
+      background: #FFFFFF;
+    }
+    body.dark input {
+      background: #052E16;
+      color: #F0FDF4;
+      border-color: #166534;
+    }
+    input:focus {
+      outline: none;
+      border-color: #14532D;
+    }
+    body.dark input:focus {
+      border-color: #4ADE80;
+    }
+    .password-group {
+      position: relative;
+    }
+    .toggle-password {
+      position: absolute;
+      right: 12px;
+      top: 38px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 18px;
+      color: #14532D;
+      padding: 4px 8px;
+    }
+    body.dark .toggle-password {
+      color: #4ADE80;
+    }
+    .security-note {
+      font-size: 12px;
+      color: #166534;
+      margin-top: 8px;
+      line-height: 1.5;
+    }
+    body.dark .security-note {
+      color: #86EFAC;
+    }
+    .btn {
+      width: 100%;
+      padding: 14px;
+      background: #14532D;
+      color: #FFFFFF;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      margin-top: 24px;
+    }
+    body.dark .btn {
+      background: #4ADE80;
+      color: #052E16;
+    }
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .links {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 14px;
+    }
+    .links a {
+      color: #4ADE80;
+      text-decoration: none;
+    }
+    body.dark .links a {
+      color: #86EFAC;
+    }
+    .divider {
+      margin: 0 8px;
+      color: #6B7280;
+    }
+    .security-info {
+      background: #F0FDF4;
+      padding: 16px;
+      border-radius: 8px;
+      margin-top: 20px;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    body.dark .security-info {
+      background: #052E16;
+    }
+    footer {
+      margin-top: 40px;
+      text-align: center;
+      font-size: 13px;
+      color: #166534;
+    }
+    body.dark footer {
+      color: #86EFAC;
+    }
+    footer a {
+      color: #14532D;
+      text-decoration: none;
+      margin: 0 8px;
+    }
+    body.dark footer a {
+      color: #4ADE80;
+    }
+  </style>
+</head>
+<body>
+  <div class="top-nav">
+    <a href="index.html" class="back-link">← Back to Home</a>
+    <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
+  </div>
+  
+  <div class="container">
+
+
+    <div class="card">
+      <div class="logo">ManMoon</div>
+      <h1>Secure Login</h1>
+
+      
+      <form id="loginForm" autocomplete="on">
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" name="email" autocomplete="email" required>
+        </div>
+        
+        <div class="form-group password-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" autocomplete="current-password" required>
+          <button type="button" class="toggle-password" onclick="togglePasswordVisibility()">👁️</button>
+        </div>
+        
+        <button type="submit" class="btn">Login</button>
+      </form>
+      
+      <div class="links">
+        <a href="forgot-password.html">Forgot password?</a>
+        <span class="divider">•</span>
+        <a href="signup.html">Create new account</a>
+      </div>
+
+
+    </div>
+    
+    <footer>
+      <div>© 2026 ManMoon - Secure Learning Platform</div>
+      <div style="margin-top: 8px;">
+        <a href="privacy.html">Privacy Policy</a> | <a href="terms.html">Terms of Service</a> | <a href="refund.html">Refund Policy</a> | <a href="contact.html">Contact Support</a> | <a href="about.html">About Us</a>
+      </div>
+    </footer>
+  </div>
+
+  <script type="module">
+    if (localStorage.getItem('userName')) {
+      window.location.href = 'dashboard.html';
+    }
+
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-analytics.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCfM85FQhBDmonkh4w57rAfpwNB9afXLdQ",
+      authDomain: "manmoon-12.firebaseapp.com",
+      projectId: "manmoon-12",
+      storageBucket: "manmoon-12.firebasestorage.app",
+      messagingSenderId: "484001203292",
+      appId: "1:484001203292:web:f136fedfb8cb0b4c3a9299",
+      measurementId: "G-6YEJJ98KVM"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    
+    function generateDeviceId() {
+      const id = 'device_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+      localStorage.setItem('deviceId', id);
+      return id;
+    }
+
+    function generateSessionToken() {
+      return 'session_' + Math.random().toString(36).substr(2, 20) + '_' + Date.now();
+    }
+
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const btn = document.querySelector('.btn');
+      
+      btn.disabled = true;
+      btn.textContent = '🔐 Signing In...';
+      
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        
+        const userDoc = await getDoc(doc(db, 'users', user.uid));
+        
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          
+          const updateData = {
+            name: userData.name,
+            email: userData.email,
+            paymentStatus: userData.paymentStatus || 'unpaid',
+            createdAt: userData.createdAt,
+            firstSignIn: userData.firstSignIn || userData.createdAt,
+            lastSignIn: new Date().toISOString(),
+            role: userData.role || 'student'
+          };
+          
+          await setDoc(doc(db, 'users', user.uid), updateData);
+          
+          const sessionToken = generateSessionToken();
+          
+          localStorage.setItem('userName', userData.name);
+          localStorage.setItem('userEmail', userData.email);
+          localStorage.setItem('userId', user.uid);
+          localStorage.setItem('sessionToken', sessionToken);
+          localStorage.setItem('firstSignIn', userData.firstSignIn || userData.createdAt);
+          localStorage.setItem('lastSignIn', new Date().toISOString());
+          
+          await setDoc(doc(db, 'users', user.uid), {...updateData, sessionToken: sessionToken});
+          
+          console.log('Payment Status:', userData.paymentStatus);
+          alert('Welcome back, ' + userData.name + '!');
+          if (userData.paymentStatus === 'paid') {
+            window.location.href = 'dashboard.html';
+          } else {
+            window.location.href = 'subscribe.html';
+          }
+        } else {
+          alert('User data not found. Please contact support.');
+          btn.disabled = false;
+          btn.textContent = '🔐 Secure Login';
+        }
+        
+      } catch (error) {
+        console.error('Error:', error);
+        let errorMessage = 'Failed to sign in. ';
+        
+        if (error.code === 'auth/user-not-found') {
+          errorMessage = 'No account found with this email. Please sign up.';
+        } else if (error.code === 'auth/wrong-password') {
+          errorMessage = 'Incorrect password. Please try again.';
+        } else if (error.code === 'auth/invalid-email') {
+          errorMessage = 'Invalid email address.';
+        } else if (error.code === 'auth/too-many-requests') {
+          errorMessage = 'Too many failed attempts. Please try again later.';
+        }
+        
+        alert(errorMessage);
+        btn.disabled = false;
+        btn.textContent = '🔐 Secure Login';
+      }
+    });
+  </script>
+
+  <script>
+    function toggleTheme() {
+      document.body.classList.toggle('dark');
+      localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+    }
+    if (localStorage.getItem('theme') === 'dark') {
+      document.body.classList.add('dark');
+    }
+    
+    function togglePasswordVisibility() {
+      const passwordInput = document.getElementById('password');
+      const toggleBtn = document.querySelector('.toggle-password');
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        toggleBtn.textContent = '🙈';
+      } else {
+        passwordInput.type = 'password';
+        toggleBtn.textContent = '👁️';
+      }
+    }
+  </script>
+</body>
+</html>
