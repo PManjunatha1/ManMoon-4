@@ -1,13 +1,7 @@
 {
   "functions": {
-    "vercel-create-order.js": {
+    "api/create-order.js": {
       "runtime": "nodejs18.x"
     }
-  },
-  "rewrites": [
-    {
-      "source": "/api/create-order",
-      "destination": "/vercel-create-order.js"
-    }
-  ]
+  }
 }
