@@ -39,6 +39,7 @@ export default async function handler(req, res) {
       customer_details: {
         customer_id: userId,
         customer_email: email,
+        customer_phone: "9999999999",
         customer_name: name || "Customer"
       },
       order_meta: {
