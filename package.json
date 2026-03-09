@@ -2,6 +2,7 @@
   "name": "manmoon-backend",
   "version": "1.0.0",
   "description": "ManMoon Learning Platform Backend",
+  "type": "module",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -12,10 +13,12 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
-    "firebase-admin": "^12.1.1",
-    "uuid": "^10.0.0"
+    "firebase-admin": "^12.1.1"
   },
   "devDependencies": {
     "nodemon": "^3.1.0"
+  },
+  "engines": {
+    "node": "18"
   }
 }
