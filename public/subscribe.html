@@ -152,22 +152,7 @@
 
     // Auto-detect API endpoint based on environment
     function getApiEndpoint() {
-      const hostname = window.location.hostname;
-      const port = window.location.port;
-      
-      if ((hostname === 'localhost' || hostname === '127.0.0.1') && port === '5500') {
-        return 'http://localhost:3000/api/create-order'; // Live Server -> Node server
-      } else if ((hostname === 'localhost' || hostname === '127.0.0.1') && port === '3000') {
-        return '/api/create-order'; // Direct Node server
-      } else if (hostname.includes('netlify.app')) {
-        return '/.netlify/functions/create-order'; // Netlify
-      } else if (hostname.includes('vercel.app')) {
-        return '/api/create-order'; // Vercel
-      } else if (hostname.includes('web.app') || hostname.includes('firebaseapp.com')) {
-        return 'https://us-central1-manmoon3.cloudfunctions.net/createOrder'; // Firebase
-      } else {
-        return '/api/create-order'; // Default
-      }
+      return 'https://manmoon-4.vercel.app/api/create-order';
     }
 
     window.initiatePayment = async function() {
@@ -188,7 +173,10 @@
 
         const response = await fetch(apiEndpoint, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
           body: JSON.stringify({
             amount: 100,
             email: userEmail,
@@ -197,23 +185,36 @@
           })
         });
 
-        const text = await response.text();
-        console.log('Response text:', text);
-
         if (!response.ok) {
-          throw new Error('Server error: ' + text);
+          const errorText = await response.text();
+          console.error('Server response error:', errorText);
+          throw new Error(`Server error (${response.status}): ${errorText}`);
         }
 
-        const data = JSON.parse(text);
+        const data = await response.json();
         console.log('Order Response:', data);
         
         if (data.payment_session_id) {
-          const cashfree = Cashfree({ mode: 'sandbox' });
+          console.log('Payment session ID received:', data.payment_session_id);
+          
+          // Ensure Cashfree SDK is loaded
+          if (typeof Cashfree === 'undefined') {
+            console.error('Cashfree SDK not loaded');
+            alert('Payment system is loading. Please wait a moment and try again.');
+            setTimeout(() => {
+              window.location.reload();
+            }, 1000);
+            return;
+          }
+          
+          const cashfree = Cashfree({ mode: 'production' });
           const checkoutOptions = {
             paymentSessionId: data.payment_session_id,
             redirectTarget: '_self'
           };
+          
           cashfree.checkout(checkoutOptions).then(async (response) => {
+            console.log('Payment response:', response);
             if (response.paymentDetails) {
               await updateDoc(doc(db, 'users', currentUser.uid), {
                 paymentStatus: 'paid',
@@ -225,9 +226,11 @@
             }
           }).catch((error) => {
             console.error('Payment failed:', error);
+            alert('Payment failed: ' + error.message);
           });
         } else {
-          alert('Payment session error. Check console for details.');
+          console.error('No payment_session_id in response:', data);
+          alert('Payment session error. Server response: ' + JSON.stringify(data));
         }
       } catch (error) {
         console.error('Payment error:', error);

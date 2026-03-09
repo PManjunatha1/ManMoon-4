@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes">
+  <meta name="description" content="Subscribe to ManMoon - Complete Android Development Learning Package">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Subscribe - ManMoon Learning Platform</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #F0FDF4; color: #052E16; min-height: 100vh; transition: background 0.3s, color 0.3s; }
+    body.dark { background: #052E16; color: #F0FDF4; }
+    .container { max-width: 700px; margin: 100px auto 40px; padding: 0 20px; }
+    .card { background: #FFFFFF; padding: 40px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); }
+    body.dark .card { background: #14532D; }
+    h1 { font-size: 32px; color: #14532D; margin-bottom: 12px; text-align: center; }
+    body.dark h1 { color: #4ADE80; }
+    .price-box { background: #F0FDF4; padding: 30px; border-radius: 12px; text-align: center; margin-bottom: 30px; border: 2px solid #14532D; }
+    body.dark .price-box { background: #052E16; border-color: #4ADE80; }
+    .price { font-size: 48px; font-weight: 700; color: #14532D; margin-bottom: 8px; }
+    body.dark .price { color: #4ADE80; }
+    .pay-btn { width: 100%; padding: 16px; background: #14532D; color: #FFFFFF; border: none; border-radius: 8px; font-size: 18px; font-weight: 600; cursor: pointer; margin-bottom: 16px; }
+    body.dark .pay-btn { background: #4ADE80; color: #052E16; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>Complete Learning Package</h1>
+      
+      <div class="price-box">
+        <div class="price">₹100</div>
+        <div class="price-label">One-time payment • Lifetime access</div>
+      </div>
+
+      <button class="pay-btn" onclick="initiatePayment()">💳 Pay ₹100 (Demo Mode)</button>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
+    import { getFirestore, doc, updateDoc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCfM85FQhBDmonkh4w57rAfpwNB9afXLdQ",
+      authDomain: "manmoon-12.firebaseapp.com",
+      projectId: "manmoon-12",
+      storageBucket: "manmoon-12.firebasestorage.app",
+      messagingSenderId: "484001203292",
+      appId: "1:484001203292:web:f136fedfb8cb0b4c3a9299",
+      measurementId: "G-6YEJJ98KVM"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let currentUser = null;
+
+    onAuthStateChanged(auth, (user) => {
+      currentUser = user;
+      if (!user) {
+        window.location.href = 'signin.html';
+      }
+    });
+
+    window.initiatePayment = async function() {
+      if (!currentUser) {
+        alert('Please sign in first');
+        window.location.href = 'signin.html';
+        return;
+      }
+
+      try {
+        await updateDoc(doc(db, 'users', currentUser.uid), {
+          paymentStatus: 'paid',
+          amountPaid: 100,
+          paymentDate: new Date().toISOString(),
+          subscriptionActive: true
+        });
+        
+        localStorage.setItem('paymentCompleted', 'true');
+        alert('✅ Payment Successful! (Demo Mode)');
+        window.location.href = 'dashboard.html';
+        
+      } catch (error) {
+        console.error('Error:', error);
+        alert('❌ Error updating payment status');
+      }
+    };
+  </script>
+</body>
+</html>
