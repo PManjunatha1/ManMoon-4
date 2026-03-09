@@ -1,4 +1,5 @@
 const axios = require('axios');
+import { v4 as uuidv4 } from 'uuid';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -6,10 +7,11 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { amount, email, userId, name } = req.body;
+    // We ignore amount from body for security
+    const { email, userId, name } = req.body;
     
-    if (!amount || !email || !userId) {
-      return res.status(400).json({ error: 'Missing required fields' });
+    if (!email || !userId) {
+      return res.status(400).json({ error: 'Missing required fields: email, userId' });
     }
 
     const APP_ID = process.env.APP_ID;
@@ -20,26 +22,28 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: 'Server configuration error' });
     }
 
-    const orderId = "order_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9);
+    const orderId = `order_${uuidv4()}`;
+    const host = req.headers['x-forwarded-host'] || req.headers.host;
+    const protocol = host.startsWith('localhost') ? 'http' : 'https';
+    const baseUrl = `${protocol}://${host}`;
 
     const orderData = {
       order_id: orderId,
-      order_amount: parseFloat(amount),
+      order_amount: 100, // Enforce price on the backend
       order_currency: "INR",
       customer_details: {
         customer_id: userId,
         customer_email: email,
-        customer_phone: "9999999999",
-        customer_name: name || "Customer"
+        customer_name: name || "Customer" // Phone number removed
       },
       order_meta: {
-        return_url: `https://manmoon-4.vercel.app/success.html?userId=${userId}&orderId=${orderId}`,
-        notify_url: `https://manmoon-4.vercel.app/api/webhook`
+        return_url: `${baseUrl}/success.html?userId=${userId}&orderId=${orderId}`,
+        notify_url: `${baseUrl}/api/webhook`
       }
     };
 
     const response = await axios.post(
-      "https://api.cashfree.com/pg/orders",
+      "https://sandbox.cashfree.com/pg/orders", // Using sandbox for safety
       orderData,
       {
         headers: {
@@ -60,9 +64,9 @@ export default async function handler(req, res) {
       });
     }
   } catch (error) {
-    console.error('Payment error:', error.message);
+    console.error('Payment error:', error.response ? JSON.stringify(error.response.data, null, 2) : error.message);
     return res.status(500).json({ 
-      error: error.response?.data?.message || error.message,
+      error: error.response?.data?.message || 'An unexpected error occurred',
       details: error.response?.data
     });
   }
