@@ -164,60 +164,78 @@
     });
 
     window.initiatePayment = async function() {
+      console.log('=== PAYMENT INITIATED ===');
+      
       if (!currentUser) {
+        console.error('ERROR: No user logged in');
         alert('Please sign in first.');
         return;
       }
+      console.log('✓ User logged in:', currentUser.uid);
 
       payBtn.disabled = true;
       payBtn.textContent = 'Processing...';
 
       try {
+        console.log('Step 1: Fetching user data from Firebase...');
         const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
         const userData = userDoc.data();
         const userEmail = userData?.email || currentUser.email;
         const userName = userData?.name || '';
+        console.log('✓ User data:', { email: userEmail, name: userName });
 
         if (!userEmail) {
+          console.error('ERROR: No email found');
           alert('Could not determine user email. Please update your profile.');
           payBtn.disabled = false;
           payBtn.textContent = '💳 Pay ₹100 with Cashfree';
           return;
         }
 
+        console.log('Step 2: Sending request to /api/create-order...');
         const response = await fetch('/api/create-order', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            // Amount is set on the backend for security
             email: userEmail,
             name: userName,
             userId: currentUser.uid
           })
         });
 
+        console.log('✓ Response status:', response.status);
         const responseData = await response.json();
+        console.log('✓ Response data:', responseData);
 
         if (!response.ok) {
-          throw new Error(responseData.error || 'An unknown backend error occurred.');
+          console.error('ERROR: Backend returned error:', responseData);
+          throw new Error(responseData.error || 'Backend error: ' + response.status);
         }
         
         if (!responseData.payment_session_id) {
+          console.error('ERROR: No payment_session_id in response');
           throw new Error('Failed to retrieve payment session ID.');
         }
+        console.log('✓ Payment session ID:', responseData.payment_session_id);
 
         if (typeof Cashfree === 'undefined') {
+          console.error('ERROR: Cashfree SDK not loaded');
           throw new Error('Cashfree SDK is not available.');
         }
+        console.log('✓ Cashfree SDK loaded');
         
-        const cashfree = Cashfree({ mode: 'production' }); // Use production mode
+        console.log('Step 3: Opening Cashfree checkout...');
+        const cashfree = Cashfree({ mode: 'production' });
         cashfree.checkout({
           paymentSessionId: responseData.payment_session_id,
           redirectTarget: '_self'
         });
+        console.log('✓ Checkout opened');
 
       } catch (error) {
-        console.error('Payment Initiation Error:', error);
+        console.error('=== PAYMENT ERROR ===');
+        console.error('Error message:', error.message);
+        console.error('Full error:', error);
         alert('Error: ' + error.message);
         payBtn.disabled = false;
         payBtn.textContent = '💳 Pay ₹100 with Cashfree';
