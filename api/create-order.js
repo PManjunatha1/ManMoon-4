@@ -1,14 +1,6 @@
 const axios = require('axios');
 
 export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -20,29 +12,35 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    const orderId = "order_" + Date.now();
     const APP_ID = process.env.APP_ID;
     const SECRET_KEY = process.env.SECRET_KEY;
 
     if (!APP_ID || !SECRET_KEY) {
-      return res.status(500).json({ error: 'API credentials not configured' });
+      console.error('Missing API credentials');
+      return res.status(500).json({ error: 'Server configuration error' });
     }
+
+    const orderId = "order_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9);
+
+    const orderData = {
+      order_id: orderId,
+      order_amount: parseFloat(amount),
+      order_currency: "INR",
+      customer_details: {
+        customer_id: userId,
+        customer_email: email,
+        customer_phone: "9999999999",
+        customer_name: name || "Customer"
+      },
+      order_meta: {
+        return_url: `https://manmoon-4.vercel.app/success.html?userId=${userId}&orderId=${orderId}`,
+        notify_url: `https://manmoon-4.vercel.app/api/webhook`
+      }
+    };
 
     const response = await axios.post(
       "https://api.cashfree.com/pg/orders",
-      {
-        order_id: orderId,
-        order_amount: amount,
-        order_currency: "INR",
-        customer_details: {
-          customer_id: userId,
-          customer_email: email,
-          customer_phone: "9999999999"
-        },
-        order_meta: {
-          return_url: `${req.headers.origin || req.headers.host}/subscribe.html`
-        }
-      },
+      orderData,
       {
         headers: {
           "Content-Type": "application/json",
@@ -53,10 +51,17 @@ export default async function handler(req, res) {
       }
     );
 
-    res.status(200).json(response.data);
+    if (response.data && response.data.payment_session_id) {
+      return res.status(200).json(response.data);
+    } else {
+      return res.status(500).json({ 
+        error: 'Invalid response from payment gateway',
+        details: response.data
+      });
+    }
   } catch (error) {
-    console.error('Cashfree Error:', error.response?.data || error.message);
-    res.status(500).json({ 
+    console.error('Payment error:', error.message);
+    return res.status(500).json({ 
       error: error.response?.data?.message || error.message,
       details: error.response?.data
     });
