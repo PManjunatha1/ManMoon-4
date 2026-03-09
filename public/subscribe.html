@@ -188,7 +188,8 @@
         if (!response.ok) {
           const errorText = await response.text();
           console.error('Server response error:', errorText);
-          throw new Error(`Server error (${response.status}): ${errorText}`);
+          alert('Server Error: ' + errorText);
+          return;
         }
 
         const data = await response.json();
@@ -234,7 +235,7 @@
         }
       } catch (error) {
         console.error('Payment error:', error);
-        alert('Error: ' + error.message);
+        alert('Payment Error Details: ' + error.message + '\n\nPlease check browser console for more details.');
       }
     };
   </script>

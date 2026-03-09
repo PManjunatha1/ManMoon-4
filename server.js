@@ -94,7 +94,14 @@ app.post('/api/create-order', async (req, res) => {
 });
 
 app.get('/health', (req, res) => {
-  res.json({ status: 'Server running' });
+  res.json({ 
+    status: 'Server running',
+    timestamp: new Date().toISOString(),
+    env_check: {
+      APP_ID: APP_ID ? 'SET' : 'MISSING',
+      SECRET_KEY: SECRET_KEY ? 'SET' : 'MISSING'
+    }
+  });
 });
 
 const PORT = process.env.PORT || 3000;
