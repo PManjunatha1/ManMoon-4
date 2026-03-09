@@ -236,7 +236,7 @@
         console.error('=== PAYMENT ERROR ===');
         console.error('Error message:', error.message);
         console.error('Full error:', error);
-        alert('Error: ' + error.message);
+        alert('Payment Error:\n' + error.message + '\n\nCheck console (F12) for details');
         payBtn.disabled = false;
         payBtn.textContent = '💳 Pay ₹100 with Cashfree';
       }
