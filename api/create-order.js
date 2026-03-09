@@ -1,14 +1,22 @@
 const axios = require('axios');
-import { v4 as uuidv4 } from 'uuid';
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
+
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
-    // We ignore amount from body for security
-    const { email, userId, name } = req.body;
+    const { email, userId, name, amount } = req.body;
     
     if (!email || !userId) {
       return res.status(400).json({ error: 'Missing required fields: email, userId' });
@@ -22,28 +30,28 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: 'Server configuration error' });
     }
 
-    const orderId = `order_${uuidv4()}`;
-    const host = req.headers['x-forwarded-host'] || req.headers.host;
-    const protocol = host.startsWith('localhost') ? 'http' : 'https';
-    const baseUrl = `${protocol}://${host}`;
+    const orderId = `order_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
     const orderData = {
       order_id: orderId,
-      order_amount: 100, // Enforce price on the backend
+      order_amount: amount || 100,
       order_currency: "INR",
       customer_details: {
         customer_id: userId,
         customer_email: email,
-        customer_name: name || "Customer" // Phone number removed
+        customer_name: name || "Customer"
       },
       order_meta: {
-        return_url: `${baseUrl}/success.html?userId=${userId}&orderId=${orderId}`,
-        notify_url: `${baseUrl}/api/webhook`
+        return_url: `https://manmoon-4.vercel.app/success.html?userId=${userId}&orderId=${orderId}`,
+        notify_url: `https://manmoon-4.vercel.app/api/webhook`
       }
     };
 
+    console.log('Creating order:', orderId);
+    console.log('API Credentials:', { APP_ID: APP_ID ? 'SET' : 'MISSING', SECRET_KEY: SECRET_KEY ? 'SET' : 'MISSING' });
+
     const response = await axios.post(
-      "https://sandbox.cashfree.com/pg/orders", // Using sandbox for safety
+      "https://api.cashfree.com/pg/orders",
       orderData,
       {
         headers: {
@@ -55,6 +63,8 @@ export default async function handler(req, res) {
       }
     );
 
+    console.log('Cashfree response:', response.status);
+
     if (response.data && response.data.payment_session_id) {
       return res.status(200).json(response.data);
     } else {
@@ -64,10 +74,13 @@ export default async function handler(req, res) {
       });
     }
   } catch (error) {
-    console.error('Payment error:', error.response ? JSON.stringify(error.response.data, null, 2) : error.message);
+    console.error('Payment error:', error.message);
+    if (error.response) {
+      console.error('Cashfree error:', error.response.data);
+    }
     return res.status(500).json({ 
-      error: error.response?.data?.message || 'An unexpected error occurred',
+      error: error.response?.data?.message || error.message,
       details: error.response?.data
     });
   }
-}
+};

@@ -210,7 +210,7 @@
           throw new Error('Cashfree SDK is not available.');
         }
         
-        const cashfree = Cashfree({ mode: 'sandbox' }); // Use sandbox mode
+        const cashfree = Cashfree({ mode: 'production' }); // Use production mode
         cashfree.checkout({
           paymentSessionId: responseData.payment_session_id,
           redirectTarget: '_self'
