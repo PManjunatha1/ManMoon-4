@@ -21,15 +21,15 @@ export default async function handler(req, res) {
     }
 
     const orderId = "order_" + Date.now();
-    const APP_ID = process.env.CASHFREE_APP_ID;
-    const SECRET_KEY = process.env.CASHFREE_SECRET_KEY;
+    const APP_ID = process.env.APP_ID;
+    const SECRET_KEY = process.env.SECRET_KEY;
 
     if (!APP_ID || !SECRET_KEY) {
       return res.status(500).json({ error: 'API credentials not configured' });
     }
 
     const response = await axios.post(
-      "https://sandbox.cashfree.com/pg/orders",
+      "https://api.cashfree.com/pg/orders",
       {
         order_id: orderId,
         order_amount: amount,
