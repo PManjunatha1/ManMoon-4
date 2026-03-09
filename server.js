@@ -4,7 +4,10 @@ const axios = require('axios');
 require('dotenv').config();
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: ['https://manmoon-4.vercel.app', 'http://localhost:3000'],
+  credentials: true
+}));
 app.use(express.json());
 app.use(express.static('public'));
 
