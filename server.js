@@ -53,7 +53,7 @@ app.post('/api/create-order', async (req, res) => {
     console.log('Sending order data to Cashfree...');
 
     const response = await axios.post(
-      "https://sandbox.cashfree.com/pg/orders",
+      "https://api.cashfree.com/pg/orders",
       orderData,
       {
         headers: {

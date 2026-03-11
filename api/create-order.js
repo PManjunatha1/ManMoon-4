@@ -52,7 +52,7 @@ export default async function handler(req, res) {
     console.log('Sending to Cashfree API...');
 
     const response = await axios.post(
-      "https://sandbox.cashfree.com/pg/orders",
+      "https://api.cashfree.com/pg/orders",
       orderData,
       {
         headers: {

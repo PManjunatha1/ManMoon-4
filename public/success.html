@@ -2,164 +2,81 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Payment Processing - ManMoon</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes">
+  <title>Payment Successful - ManMoon</title>
   <style>
-    body { font-family: system-ui, sans-serif; background: #F0FDF4; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; overflow: hidden; }
-    .container { text-align: center; padding: 40px; background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 10; position: relative; }
-    .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #14532D; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 20px auto; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #F0FDF4; color: #052E16; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+    .container { text-align: center; padding: 40px; }
+    .success-icon { font-size: 80px; margin-bottom: 20px; animation: bounce 0.6s; }
+    @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+    h1 { font-size: 32px; color: #14532D; margin-bottom: 10px; }
+    p { font-size: 18px; color: #166534; margin-bottom: 30px; }
+    .loader { border: 4px solid #F0FDF4; border-top: 4px solid #14532D; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 20px auto; }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    
-    /* 3D Flower Rain Animation */
-    .flower-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; }
-    .flower { position: absolute; font-size: 20px; animation: fall linear infinite; transform-style: preserve-3d; }
-    
-    @keyframes fall {
-      0% { 
-        transform: translateY(-100px) rotateX(0deg) rotateY(0deg) rotateZ(0deg); 
-        opacity: 1; 
-      }
-      100% { 
-        transform: translateY(100vh) rotateX(360deg) rotateY(360deg) rotateZ(360deg); 
-        opacity: 0; 
-      }
-    }
-    
-    /* Success Animation */
-    .success-content {
-      animation: successPop 0.8s ease-out;
-      transform-style: preserve-3d;
-    }
-    
-    @keyframes successPop {
-      0% { transform: scale(0) rotateY(-180deg); opacity: 0; }
-      50% { transform: scale(1.1) rotateY(-90deg); }
-      100% { transform: scale(1) rotateY(0deg); opacity: 1; }
-    }
-    
-    .success-icon {
-      font-size: 80px;
-      animation: bounce 1s ease-in-out infinite alternate;
-      display: inline-block;
-      text-shadow: 0 4px 8px rgba(0,0,0,0.3);
-    }
-    
-    @keyframes bounce {
-      0% { transform: translateY(0px) scale(1); }
-      100% { transform: translateY(-10px) scale(1.05); }
-    }
-    
-    .success-title {
-      background: linear-gradient(45deg, #14532D, #4ADE80, #14532D);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      font-size: 32px;
-      font-weight: bold;
-      margin: 20px 0;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-    }
+    .message { font-size: 16px; color: #166534; margin-top: 20px; }
   </style>
 </head>
 <body>
-  <!-- Flower Rain Container -->
-  <div class="flower-container" id="flowerContainer"></div>
-  
   <div class="container">
-    <div class="spinner"></div>
-    <h2>Processing Payment...</h2>
-    <p>Please wait while we verify your payment.</p>
+    <div class="success-icon">✅</div>
+    <h1>Payment Successful!</h1>
+    <p>Thank you for your purchase</p>
+    <div class="loader"></div>
+    <div class="message">Redirecting to your dashboard...</div>
   </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
-    import { getFirestore, doc, updateDoc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+  <script>
+    let userId = null;
+    let orderId = null;
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCfM85FQhBDmonkh4w57rAfpwNB9afXLdQ",
-      authDomain: "manmoon-12.firebaseapp.com",
-      projectId: "manmoon-12",
-      storageBucket: "manmoon-12.firebasestorage.app",
-      messagingSenderId: "484001203292",
-      appId: "1:484001203292:web:f136fedfb8cb0b4c3a9299",
-      measurementId: "G-6YEJJ98KVM"
-    };
+    // Get URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    userId = urlParams.get('userId');
+    orderId = urlParams.get('orderId');
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+    // Initialize Firebase
+    import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js").then(({ initializeApp }) => {
+      import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js").then(({ getFirestore, doc, updateDoc }) => {
+        const firebaseConfig = {
+          apiKey: "AIzaSyCfM85FQhBDmonkh4w57rAfpwNB9afXLdQ",
+          authDomain: "manmoon-12.firebaseapp.com",
+          projectId: "manmoon-12",
+          storageBucket: "manmoon-12.firebasestorage.app",
+          messagingSenderId: "484001203292",
+          appId: "1:484001203292:web:f136fedfb8cb0b4c3a9299",
+          measurementId: "G-6YEJJ98KVM"
+        };
 
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        window.location.href = 'signin.html';
-        return;
-      }
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
 
-      const urlParams = new URLSearchParams(window.location.search);
-      const userId = urlParams.get('userId') || user.uid;
-      const orderId = urlParams.get('orderId');
-      
-      // For now, assume payment is successful and update user status
-      try {
-        await updateDoc(doc(db, 'users', userId), {
-          paymentStatus: 'paid',
-          amountPaid: 100,
-          paymentDate: new Date().toISOString(),
-          subscriptionActive: true,
-          orderId: orderId
-        });
-        
-        localStorage.setItem('paymentCompleted', 'true');
-        
-        document.querySelector('.container').innerHTML = `
-          <div class="success-content">
-            <div class="success-icon">🎉</div>
-            <h2 class="success-title">Payment Successful!</h2>
-            <p style="font-size: 18px; color: #14532D; margin: 20px 0;">Welcome to ManMoon! Redirecting to your dashboard...</p>
-          </div>
-        `;
-        
-        // Start flower rain animation
-        startFlowerRain();
-        
-        setTimeout(() => {
-          window.location.href = 'dashboard.html';
-        }, 5000);
-        
-      } catch (error) {
-        console.error('Database update failed:', error);
-        
-        document.querySelector('.container').innerHTML = `
-          <div style="color: #DC2626; font-size: 48px; margin-bottom: 16px;">❌</div>
-          <h2 style="color: #DC2626;">Payment Failed</h2>
-          <p>Please try again or contact support.</p>
-          <button onclick="window.location.href='subscribe.html'" style="margin-top: 20px; padding: 12px 24px; background: #14532D; color: white; border: none; border-radius: 8px; cursor: pointer;">Try Again</button>
-        `;
-      }
+        // Update user subscription status
+        if (userId) {
+          updateDoc(doc(db, 'users', userId), {
+            subscribed: true,
+            paymentStatus: 'paid',
+            amountPaid: 100,
+            paymentDate: new Date().toISOString(),
+            orderId: orderId
+          }).then(() => {
+            console.log('User subscription updated');
+            setTimeout(() => {
+              window.location.href = 'dashboard.html';
+            }, 2000);
+          }).catch((error) => {
+            console.error('Error updating subscription:', error);
+            setTimeout(() => {
+              window.location.href = 'dashboard.html';
+            }, 2000);
+          });
+        } else {
+          setTimeout(() => {
+            window.location.href = 'dashboard.html';
+          }, 2000);
+        }
+      });
     });
-    
-    // Flower Rain Animation Function
-    function startFlowerRain() {
-      const flowerContainer = document.getElementById('flowerContainer');
-      const flowers = ['🌸', '🌺', '🌼', '🌷', '🌹', '🌻', '🌀', '🌿'];
-      
-      // Create 20 flowers
-      for (let i = 0; i < 20; i++) {
-        const flower = document.createElement('div');
-        flower.className = 'flower';
-        flower.textContent = flowers[Math.floor(Math.random() * flowers.length)];
-        flower.style.left = Math.random() * 100 + '%';
-        flower.style.animationDuration = (Math.random() * 2 + 2) + 's';
-        flower.style.animationDelay = (Math.random() * 4) + 's';
-        flowerContainer.appendChild(flower);
-      }
-      
-      // Remove flowers after 5 seconds
-      setTimeout(() => {
-        flowerContainer.innerHTML = '';
-      }, 5000);
-    }
   </script>
 </body>
 </html>

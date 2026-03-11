@@ -108,7 +108,7 @@
       </div>
 
       <div class="agreement">
-        By proceeding with payment, you agree to our <a href="terms.html" target="_blank">Terms of Service</a> and <a href="refund.html" target="_blank\">Refund Policy</a>. Please read them carefully before purchasing.
+        By proceeding with payment, you agree to our <a href="terms.html" target="_blank">Terms of Service</a> and <a href="refund.html" target="_blank">Refund Policy</a>. Please read them carefully before purchasing.
       </div>
 
       <button class="pay-btn" onclick="initiatePayment()">💳 Pay ₹100 with Cashfree</button>
@@ -155,8 +155,9 @@
             payBtn.textContent = 'Checking Status...';
             const userDoc = await getDoc(doc(db, 'users', user.uid));
             if (userDoc.exists() && userDoc.data().subscribed) {
-              payBtn.textContent = 'Already Subscribed';
-              payBtn.onclick = () => window.location.href = '/dashboard.html';
+              payBtn.textContent = 'Already Subscribed ✓';
+              payBtn.disabled = true;
+              payBtn.onclick = () => window.location.href = 'dashboard.html';
             } else {
               payBtn.disabled = false;
               payBtn.textContent = '💳 Pay ₹100 with Cashfree';
@@ -167,8 +168,6 @@
     });
 
     window.initiatePayment = async function() {
-      console.log('=== PAYMENT INITIATED ===');
-      
       if (!currentUser) {
         alert('Please sign in first.');
         return;
@@ -213,7 +212,7 @@
           throw new Error('Failed to retrieve payment session ID.');
         }
 
-        const checkoutUrl = `https://sandbox.cashfree.com/checkout/post/submit`;
+        const checkoutUrl = `https://checkout.cashfree.com/post/submit`;
         
         const form = document.createElement('form');
         form.method = 'POST';
@@ -224,13 +223,7 @@
         sessionInput.name = 'sessionId';
         sessionInput.value = responseData.payment_session_id;
         
-        const appIdInput = document.createElement('input');
-        appIdInput.type = 'hidden';
-        appIdInput.name = 'appId';
-        appIdInput.value = responseData.appId;
-        
         form.appendChild(sessionInput);
-        form.appendChild(appIdInput);
         document.body.appendChild(form);
         form.submit();
 
