@@ -1,11 +1,13 @@
-const express = require('express');
-const cors = require('cors');
-const axios = require('axios');
-require('dotenv').config();
+import express from 'express';
+import cors from 'cors';
+import axios from 'axios';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const app = express();
 app.use(cors({
-  origin: ['https://manmoon-4.vercel.app', 'http://localhost:3000'],
+  origin: ['https://manmoon-4.vercel.app', 'http://localhost:3000', 'http://127.0.0.1:5500'],
   credentials: true
 }));
 app.use(express.json());
@@ -15,7 +17,7 @@ const APP_ID = process.env.APP_ID;
 const SECRET_KEY = process.env.SECRET_KEY;
 
 if (!APP_ID || !SECRET_KEY) {
-  console.error('Error: CASHFREE_APP_ID and CASHFREE_SECRET_KEY must be set in .env file');
+  console.error('Error: APP_ID and SECRET_KEY must be set in .env file');
   process.exit(1);
 }
 
@@ -29,14 +31,8 @@ app.post('/api/create-order', async (req, res) => {
 
     const orderId = "order_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9);
 
-    console.log('Creating order with credentials:', { 
-      orderId, 
-      amount, 
-      email, 
-      userId, 
-      APP_ID: APP_ID ? 'SET' : 'NOT SET', 
-      SECRET_KEY: SECRET_KEY ? 'SET' : 'NOT SET' 
-    });
+    console.log('Creating order:', orderId);
+    console.log('API Credentials:', { APP_ID: APP_ID ? 'SET' : 'MISSING', SECRET_KEY: SECRET_KEY ? 'SET' : 'MISSING' });
 
     const orderData = {
       order_id: orderId,
@@ -50,14 +46,14 @@ app.post('/api/create-order', async (req, res) => {
       },
       order_meta: {
         return_url: `https://manmoon-4.vercel.app/success.html?userId=${userId}&orderId=${orderId}`,
-        notify_url: `https://manmoon-4.vercel.app/webhook`
+        notify_url: `https://manmoon-4.vercel.app/api/webhook`
       }
     };
 
-    console.log('Sending order data:', JSON.stringify(orderData, null, 2));
+    console.log('Sending order data to Cashfree...');
 
     const response = await axios.post(
-      "https://api.cashfree.com/pg/orders",
+      "https://sandbox.cashfree.com/pg/orders",
       orderData,
       {
         headers: {
@@ -73,7 +69,10 @@ app.post('/api/create-order', async (req, res) => {
     console.log('Cashfree Response:', JSON.stringify(response.data, null, 2));
     
     if (response.data && response.data.payment_session_id) {
-      res.json(response.data);
+      res.json({
+        ...response.data,
+        appId: APP_ID
+      });
     } else {
       console.error('No payment_session_id in response');
       res.status(500).json({ 
@@ -85,8 +84,7 @@ app.post('/api/create-order', async (req, res) => {
     console.error('Cashfree Error Details:', {
       message: error.message,
       response: error.response?.data,
-      status: error.response?.status,
-      headers: error.response?.headers
+      status: error.response?.status
     });
     
     res.status(500).json({ 

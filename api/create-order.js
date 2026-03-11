@@ -27,7 +27,7 @@ export default async function handler(req, res) {
 
     if (!APP_ID || !SECRET_KEY) {
       console.error('Missing API credentials');
-      return res.status(500).json({ error: 'Server configuration error' });
+      return res.status(500).json({ error: 'Server configuration error: Missing API keys' });
     }
 
     const orderId = `order_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -49,10 +49,10 @@ export default async function handler(req, res) {
     };
 
     console.log('Creating order:', orderId);
-    console.log('API Credentials:', { APP_ID: APP_ID ? 'SET' : 'MISSING', SECRET_KEY: SECRET_KEY ? 'SET' : 'MISSING' });
+    console.log('Sending to Cashfree API...');
 
     const response = await axios.post(
-      "https://api.cashfree.com/pg/orders",
+      "https://sandbox.cashfree.com/pg/orders",
       orderData,
       {
         headers: {
@@ -60,15 +60,22 @@ export default async function handler(req, res) {
           "x-api-version": "2023-08-01",
           "x-client-id": APP_ID,
           "x-client-secret": SECRET_KEY
-        }
+        },
+        timeout: 10000
       }
     );
 
-    console.log('Cashfree response:', response.status);
+    console.log('Cashfree response status:', response.status);
+    console.log('Cashfree response data:', JSON.stringify(response.data));
 
     if (response.data && response.data.payment_session_id) {
-      return res.status(200).json(response.data);
+      console.log('Success! Session ID:', response.data.payment_session_id);
+      return res.status(200).json({
+        ...response.data,
+        appId: APP_ID
+      });
     } else {
+      console.error('No payment_session_id in response');
       return res.status(500).json({ 
         error: 'Invalid response from payment gateway',
         details: response.data
@@ -76,12 +83,23 @@ export default async function handler(req, res) {
     }
   } catch (error) {
     console.error('Payment error:', error.message);
+    
     if (error.response) {
-      console.error('Cashfree error:', error.response.data);
+      console.error('Cashfree error status:', error.response.status);
+      console.error('Cashfree error data:', JSON.stringify(error.response.data));
+      return res.status(error.response.status || 500).json({ 
+        error: error.response.data?.message || error.message,
+        details: error.response.data
+      });
     }
+    
+    if (error.code === 'ECONNABORTED') {
+      return res.status(504).json({ error: 'Request timeout - Cashfree API not responding' });
+    }
+    
     return res.status(500).json({ 
-      error: error.response?.data?.message || error.message,
-      details: error.response?.data
+      error: error.message || 'Unknown error occurred',
+      type: error.code
     });
   }
 }

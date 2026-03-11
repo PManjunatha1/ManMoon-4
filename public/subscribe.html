@@ -108,7 +108,7 @@
       </div>
 
       <div class="agreement">
-        By proceeding with payment, you agree to our <a href="terms.html" target="_blank">Terms of Service</a> and <a href="refund.html" target="_blank">Refund Policy</a>. Please read them carefully before purchasing.
+        By proceeding with payment, you agree to our <a href="terms.html" target="_blank">Terms of Service</a> and <a href="refund.html" target="_blank\">Refund Policy</a>. Please read them carefully before purchasing.
       </div>
 
       <button class="pay-btn" onclick="initiatePayment()">💳 Pay ₹100 with Cashfree</button>
@@ -122,128 +122,127 @@
     </div>
   </footer>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyCfM85FQhBDmonkh4w57rAfpwNB9afXLdQ",
-      authDomain: "manmoon-12.firebaseapp.com",
-      projectId: "manmoon-12",
-      storageBucket: "manmoon-12.firebasestorage.app",
-      messagingSenderId: "484001203292",
-      appId: "1:484001203292:web:f136fedfb8cb0b4c3a9299",
-      measurementId: "G-6YEJJ98KVM"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
+  <script>
     let currentUser = null;
+    let db = null;
     const payBtn = document.querySelector('.pay-btn');
 
-    onAuthStateChanged(auth, async (user) => {
-      currentUser = user;
-      if (!user) {
-        window.location.href = 'signin.html';
-        return;
-      }
-      // Check if user is already subscribed
-      payBtn.disabled = true;
-      payBtn.textContent = 'Checking Status...';
-      const userDoc = await getDoc(doc(db, 'users', user.uid));
-      if (userDoc.exists() && userDoc.data().subscribed) {
-        payBtn.textContent = 'Already Subscribed';
-        pay_btn.onclick = () => window.location.href = '/dashboard.html';
-      } else {
-        payBtn.disabled = false;
-        payBtn.textContent = '💳 Pay ₹100 with Cashfree';
-      }
+    // Initialize Firebase
+    import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js").then(({ initializeApp }) => {
+      import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js").then(({ getAuth, onAuthStateChanged }) => {
+        import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js").then(({ getFirestore, doc, getDoc }) => {
+          const firebaseConfig = {
+            apiKey: "AIzaSyCfM85FQhBDmonkh4w57rAfpwNB9afXLdQ",
+            authDomain: "manmoon-12.firebaseapp.com",
+            projectId: "manmoon-12",
+            storageBucket: "manmoon-12.firebasestorage.app",
+            messagingSenderId: "484001203292",
+            appId: "1:484001203292:web:f136fedfb8cb0b4c3a9299",
+            measurementId: "G-6YEJJ98KVM"
+          };
+
+          const app = initializeApp(firebaseConfig);
+          const auth = getAuth(app);
+          db = getFirestore(app);
+
+          onAuthStateChanged(auth, async (user) => {
+            currentUser = user;
+            if (!user) {
+              window.location.href = 'signin.html';
+              return;
+            }
+            payBtn.disabled = true;
+            payBtn.textContent = 'Checking Status...';
+            const userDoc = await getDoc(doc(db, 'users', user.uid));
+            if (userDoc.exists() && userDoc.data().subscribed) {
+              payBtn.textContent = 'Already Subscribed';
+              payBtn.onclick = () => window.location.href = '/dashboard.html';
+            } else {
+              payBtn.disabled = false;
+              payBtn.textContent = '💳 Pay ₹100 with Cashfree';
+            }
+          });
+        });
+      });
     });
 
     window.initiatePayment = async function() {
       console.log('=== PAYMENT INITIATED ===');
       
       if (!currentUser) {
-        console.error('ERROR: No user logged in');
         alert('Please sign in first.');
         return;
       }
-      console.log('✓ User logged in:', currentUser.uid);
 
       payBtn.disabled = true;
       payBtn.textContent = 'Processing...';
 
       try {
-        console.log('Step 1: Fetching user data from Firebase...');
+        const { getDoc, doc } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+        
         const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
         const userData = userDoc.data();
         const userEmail = userData?.email || currentUser.email;
         const userName = userData?.name || '';
-        console.log('✓ User data:', { email: userEmail, name: userName });
 
         if (!userEmail) {
-          console.error('ERROR: No email found');
           alert('Could not determine user email. Please update your profile.');
           payBtn.disabled = false;
           payBtn.textContent = '💳 Pay ₹100 with Cashfree';
           return;
         }
 
-        console.log('Step 2: Sending request to /api/create-order...');
         const response = await fetch('/api/create-order', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
+            amount: 100,
             email: userEmail,
             name: userName,
             userId: currentUser.uid
           })
         });
 
-        console.log('✓ Response status:', response.status);
         const responseData = await response.json();
-        console.log('✓ Response data:', responseData);
 
         if (!response.ok) {
-          console.error('ERROR: Backend returned error:', responseData);
-          throw new Error(responseData.error || 'Backend error: ' + response.status);
+          throw new Error(responseData.error || 'Backend error');
         }
         
         if (!responseData.payment_session_id) {
-          console.error('ERROR: No payment_session_id in response');
           throw new Error('Failed to retrieve payment session ID.');
         }
-        console.log('✓ Payment session ID:', responseData.payment_session_id);
 
-        if (typeof Cashfree === 'undefined') {
-          console.error('ERROR: Cashfree SDK not loaded');
-          throw new Error('Cashfree SDK is not available.');
-        }
-        console.log('✓ Cashfree SDK loaded');
+        const checkoutUrl = `https://sandbox.cashfree.com/checkout/post/submit`;
         
-        console.log('Step 3: Opening Cashfree checkout...');
-        const cashfree = Cashfree({ mode: 'production' });
-        cashfree.checkout({
-          paymentSessionId: responseData.payment_session_id,
-          redirectTarget: '_self'
-        });
-        console.log('✓ Checkout opened');
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = checkoutUrl;
+        
+        const sessionInput = document.createElement('input');
+        sessionInput.type = 'hidden';
+        sessionInput.name = 'sessionId';
+        sessionInput.value = responseData.payment_session_id;
+        
+        const appIdInput = document.createElement('input');
+        appIdInput.type = 'hidden';
+        appIdInput.name = 'appId';
+        appIdInput.value = responseData.appId;
+        
+        form.appendChild(sessionInput);
+        form.appendChild(appIdInput);
+        document.body.appendChild(form);
+        form.submit();
 
       } catch (error) {
-        console.error('=== PAYMENT ERROR ===');
-        console.error('Error message:', error.message);
-        console.error('Full error:', error);
-        alert('Payment Error:\n' + error.message + '\n\nCheck console (F12) for details');
+        console.error('Payment error:', error);
+        alert('Payment Error: ' + error.message);
         payBtn.disabled = false;
         payBtn.textContent = '💳 Pay ₹100 with Cashfree';
       }
     };
   </script>
 
-  <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
   <script>
     window.history.replaceState(null, '', 'subscribe.html');
     
