@@ -78,7 +78,7 @@
       <h1>Complete Learning Package</h1>
       <p class="subtitle">One-time payment for lifetime access</p>
 
-      <div class="test-mode-badge">🧪 TEST MODE - Use test card: 4111 1111 1111 1111</div>
+      <div class="test-mode-badge">🔴 PRODUCTION MODE - Real payments enabled</div>
 
       <div class="price-box">
         <div class="price">₹100</div>
@@ -204,7 +204,7 @@
           return;
         }
 
-        const cashfree = Cashfree({ mode: 'sandbox' });
+        const cashfree = Cashfree({ mode: 'production' });
         const checkoutOptions = {
           paymentSessionId: data.payment_session_id,
           redirectTarget: '_self'
