@@ -173,7 +173,7 @@
           return;
         }
 
-        const response = await fetch('/api/create-order', {
+        const response = await fetch('https://manmoon-4.vercel.app/api/create-order', {
           method: 'POST',
           headers: { 
             'Content-Type': 'application/json',
@@ -220,7 +220,7 @@
 
       } catch (error) {
         console.error('Payment error:', error);
-        alert('Payment service error. Please try again.');
+        alert('Failed to initiate payment. Please try again.');
       }
     };
   </script>
