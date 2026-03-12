@@ -127,45 +127,46 @@
     let db = null;
     const payBtn = document.querySelector('.pay-btn');
 
-    // Initialize Firebase
-    import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js").then(({ initializeApp }) => {
-      import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js").then(({ getAuth, onAuthStateChanged }) => {
-        import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js").then(({ getFirestore, doc, getDoc }) => {
-          const firebaseConfig = {
-            apiKey: "AIzaSyCfM85FQhBDmonkh4w57rAfpwNB9afXLdQ",
-            authDomain: "manmoon-12.firebaseapp.com",
-            projectId: "manmoon-12",
-            storageBucket: "manmoon-12.firebasestorage.app",
-            messagingSenderId: "484001203292",
-            appId: "1:484001203292:web:f136fedfb8cb0b4c3a9299",
-            measurementId: "G-6YEJJ98KVM"
-          };
+    async function initializeFirebase() {
+      const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
+      const { getAuth, onAuthStateChanged } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js");
+      const { getFirestore, doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+      
+      const firebaseConfig = {
+        apiKey: "AIzaSyCfM85FQhBDmonkh4w57rAfpwNB9afXLdQ",
+        authDomain: "manmoon-12.firebaseapp.com",
+        projectId: "manmoon-12",
+        storageBucket: "manmoon-12.firebasestorage.app",
+        messagingSenderId: "484001203292",
+        appId: "1:484001203292:web:f136fedfb8cb0b4c3a9299",
+        measurementId: "G-6YEJJ98KVM"
+      };
 
-          const app = initializeApp(firebaseConfig);
-          const auth = getAuth(app);
-          db = getFirestore(app);
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      db = getFirestore(app);
 
-          onAuthStateChanged(auth, async (user) => {
-            currentUser = user;
-            if (!user) {
-              window.location.href = 'signin.html';
-              return;
-            }
-            payBtn.disabled = true;
-            payBtn.textContent = 'Checking Status...';
-            const userDoc = await getDoc(doc(db, 'users', user.uid));
-            if (userDoc.exists() && userDoc.data().subscribed) {
-              payBtn.textContent = 'Already Subscribed ✓';
-              payBtn.disabled = true;
-              payBtn.onclick = () => window.location.href = 'dashboard.html';
-            } else {
-              payBtn.disabled = false;
-              payBtn.textContent = '💳 Pay ₹100 with Cashfree';
-            }
-          });
-        });
+      onAuthStateChanged(auth, async (user) => {
+        currentUser = user;
+        if (!user) {
+          window.location.href = 'signin.html';
+          return;
+        }
+        payBtn.disabled = true;
+        payBtn.textContent = 'Checking Status...';
+        const userDoc = await getDoc(doc(db, 'users', user.uid));
+        if (userDoc.exists() && userDoc.data().subscribed) {
+          payBtn.textContent = 'Already Subscribed ✓';
+          payBtn.disabled = true;
+          payBtn.onclick = () => window.location.href = 'dashboard.html';
+        } else {
+          payBtn.disabled = false;
+          payBtn.textContent = '💳 Pay ₹100 with Cashfree';
+        }
       });
-    });
+    }
+
+    initializeFirebase();
 
     window.initiatePayment = async function() {
       if (!currentUser) {
@@ -177,7 +178,7 @@
       payBtn.textContent = 'Processing...';
 
       try {
-        const { getDoc, doc } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+        const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
         
         const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
         const userData = userDoc.data();
@@ -212,7 +213,7 @@
           throw new Error('Failed to retrieve payment session ID.');
         }
 
-        const checkoutUrl = `https://checkout.cashfree.com/post/submit`;
+        const checkoutUrl = `https://sandbox.cashfree.com/checkout/post/submit`;
         
         const form = document.createElement('form');
         form.method = 'POST';

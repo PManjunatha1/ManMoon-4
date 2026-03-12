@@ -43,8 +43,7 @@ export default async function handler(req, res) {
         customer_name: name || "Customer"
       },
       order_meta: {
-        return_url: `https://manmoon-4.vercel.app/success.html?userId=${userId}&orderId=${orderId}`,
-        notify_url: `https://manmoon-4.vercel.app/api/webhook`
+        return_url: `https://manmoon-4.vercel.app/success.html?userId=${userId}&orderId=${orderId}`
       }
     };
 
@@ -52,7 +51,7 @@ export default async function handler(req, res) {
     console.log('Sending to Cashfree API...');
 
     const response = await axios.post(
-      "https://api.cashfree.com/pg/orders",
+      "https://sandbox.cashfree.com/pg/orders",
       orderData,
       {
         headers: {
