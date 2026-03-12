@@ -41,6 +41,8 @@
     body.dark .info-box strong { color: #FCD34D; }
     .info-box p { font-size: 14px; margin: 8px 0; }
     body.dark .info-box p { color: #FEF3C7; }
+    .test-mode-badge { background: #FEF3C7; padding: 8px 12px; border-radius: 6px; font-size: 12px; color: #92400E; margin-bottom: 16px; text-align: center; }
+    body.dark .test-mode-badge { background: #78350F; color: #FCD34D; }
     .agreement { background: #F0FDF4; padding: 16px; border-radius: 8px; margin-bottom: 24px; font-size: 13px; line-height: 1.6; color: #166534; }
     body.dark .agreement { background: #052E16; color: #86EFAC; }
     .agreement a { color: #14532D; text-decoration: underline; font-weight: 600; }
@@ -75,6 +77,8 @@
     <div class="card">
       <h1>Complete Learning Package</h1>
       <p class="subtitle">One-time payment for lifetime access</p>
+
+      <div class="test-mode-badge">🧪 TEST MODE - Use test card: 4111 1111 1111 1111</div>
 
       <div class="price-box">
         <div class="price">₹100</div>
@@ -122,79 +126,59 @@
     </div>
   </footer>
 
-  <script>
+  <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCfM85FQhBDmonkh4w57rAfpwNB9afXLdQ",
+      authDomain: "manmoon-12.firebaseapp.com",
+      projectId: "manmoon-12",
+      storageBucket: "manmoon-12.firebasestorage.app",
+      messagingSenderId: "484001203292",
+      appId: "1:484001203292:web:f136fedfb8cb0b4c3a9299",
+      measurementId: "G-6YEJJ98KVM"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
     let currentUser = null;
-    let db = null;
-    const payBtn = document.querySelector('.pay-btn');
 
-    async function initializeFirebase() {
-      const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
-      const { getAuth, onAuthStateChanged } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js");
-      const { getFirestore, doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
-      
-      const firebaseConfig = {
-        apiKey: "AIzaSyCfM85FQhBDmonkh4w57rAfpwNB9afXLdQ",
-        authDomain: "manmoon-12.firebaseapp.com",
-        projectId: "manmoon-12",
-        storageBucket: "manmoon-12.firebasestorage.app",
-        messagingSenderId: "484001203292",
-        appId: "1:484001203292:web:f136fedfb8cb0b4c3a9299",
-        measurementId: "G-6YEJJ98KVM"
-      };
-
-      const app = initializeApp(firebaseConfig);
-      const auth = getAuth(app);
-      db = getFirestore(app);
-
-      onAuthStateChanged(auth, async (user) => {
-        currentUser = user;
-        if (!user) {
-          window.location.href = 'signin.html';
-          return;
-        }
-        payBtn.disabled = true;
-        payBtn.textContent = 'Checking Status...';
-        const userDoc = await getDoc(doc(db, 'users', user.uid));
-        if (userDoc.exists() && userDoc.data().subscribed) {
-          payBtn.textContent = 'Already Subscribed ✓';
-          payBtn.disabled = true;
-          payBtn.onclick = () => window.location.href = 'dashboard.html';
-        } else {
-          payBtn.disabled = false;
-          payBtn.textContent = '💳 Pay ₹100 with Cashfree';
-        }
-      });
-    }
-
-    initializeFirebase();
+    onAuthStateChanged(auth, (user) => {
+      currentUser = user;
+      if (!user) {
+        window.location.href = 'signin.html';
+      }
+    });
 
     window.initiatePayment = async function() {
       if (!currentUser) {
-        alert('Please sign in first.');
+        alert('Please sign in first');
+        window.location.href = 'signin.html';
         return;
       }
 
-      payBtn.disabled = true;
-      payBtn.textContent = 'Processing...';
-
       try {
-        const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
-        
         const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
         const userData = userDoc.data();
-        const userEmail = userData?.email || currentUser.email;
+        const userEmail = userData?.email || currentUser.email || '';
         const userName = userData?.name || '';
 
         if (!userEmail) {
-          alert('Could not determine user email. Please update your profile.');
-          payBtn.disabled = false;
-          payBtn.textContent = '💳 Pay ₹100 with Cashfree';
+          alert('Email not found. Please update your profile.');
           return;
         }
 
         const response = await fetch('/api/create-order', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
           body: JSON.stringify({
             amount: 100,
             email: userEmail,
@@ -203,36 +187,40 @@
           })
         });
 
-        const responseData = await response.json();
-
         if (!response.ok) {
-          throw new Error(responseData.error || 'Backend error');
-        }
-        
-        if (!responseData.payment_session_id) {
-          throw new Error('Failed to retrieve payment session ID.');
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Server error');
         }
 
-        const checkoutUrl = `https://sandbox.cashfree.com/checkout/post/submit`;
+        const data = await response.json();
+        console.log('Order Response:', data);
         
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = checkoutUrl;
+        if (!data.payment_session_id) {
+          throw new Error('No payment session received');
+        }
+
+        if (typeof Cashfree === 'undefined') {
+          alert('Payment system loading. Please try again.');
+          return;
+        }
+
+        const cashfree = Cashfree({ mode: 'sandbox' });
+        const checkoutOptions = {
+          paymentSessionId: data.payment_session_id,
+          redirectTarget: '_self'
+        };
         
-        const sessionInput = document.createElement('input');
-        sessionInput.type = 'hidden';
-        sessionInput.name = 'sessionId';
-        sessionInput.value = responseData.payment_session_id;
-        
-        form.appendChild(sessionInput);
-        document.body.appendChild(form);
-        form.submit();
+        cashfree.checkout(checkoutOptions).then((response) => {
+          console.log('Payment response:', response);
+          window.location.href = 'success.html';
+        }).catch((error) => {
+          console.error('Payment failed:', error);
+          alert('Payment service error. Please try again.');
+        });
 
       } catch (error) {
         console.error('Payment error:', error);
-        alert('Payment Error: ' + error.message);
-        payBtn.disabled = false;
-        payBtn.textContent = '💳 Pay ₹100 with Cashfree';
+        alert('Payment service error. Please try again.');
       }
     };
   </script>
