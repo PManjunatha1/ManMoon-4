@@ -17,27 +17,10 @@
     .logo { font-size: 24px; font-weight: 600; color: #14532D; display: flex; align-items: center; gap: 8px; }
     body.dark .logo { color: #4ADE80; }
     .logo::before { content: ''; width: 32px; height: 32px; background: url('image/image.png') center/contain no-repeat; display: inline-block; }
-    .pdf-btn { padding: 8px 16px; background: #14532D; color: #FFFFFF; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; position: relative; }
+    .pdf-btn { padding: 8px 16px; background: #14532D; color: #FFFFFF; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; }
     body.dark .pdf-btn { background: #4ADE80; color: #052E16; }
     .pdf-btn:hover { background: #166534; }
     body.dark .pdf-btn:hover { background: #86EFAC; }
-    .pdf-menu { display: none; position: absolute; top: 100%; right: 0; background: #FFFFFF; border: 2px solid #14532D; border-radius: 8px; min-width: 320px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000; margin-top: 8px; }
-    body.dark .pdf-menu { background: #14532D; border-color: #4ADE80; }
-    .pdf-menu.active { display: block; }
-    .pdf-item { display: block; padding: 16px; color: #052E16; border-bottom: 1px solid #E5E7EB; font-size: 14px; font-weight: 500; transition: all 0.2s; }
-    body.dark .pdf-item { color: #F0FDF4; border-bottom-color: #166534; }
-    .pdf-item:last-child { border-bottom: none; }
-    .pdf-title { display: block; margin-bottom: 10px; font-weight: 600; }
-    .pdf-actions { display: flex; gap: 8px; }
-    .pdf-action-btn { flex: 1; padding: 8px 12px; text-align: center; text-decoration: none; border-radius: 6px; font-size: 13px; font-weight: 600; transition: all 0.2s; }
-    .view-btn { background: #14532D; color: #FFFFFF; }
-    body.dark .view-btn { background: #4ADE80; color: #052E16; }
-    .view-btn:hover { background: #166534; }
-    body.dark .view-btn:hover { background: #86EFAC; }
-    .download-btn { background: #F0FDF4; color: #14532D; border: 2px solid #14532D; }
-    body.dark .download-btn { background: #052E16; color: #4ADE80; border-color: #4ADE80; }
-    .download-btn:hover { background: #14532D; color: #FFFFFF; }
-    body.dark .download-btn:hover { background: #4ADE80; color: #052E16; }
     .mobile-menu-btn { display: none; background: #14532D; color: #FFFFFF; border: none; padding: 10px 16px; border-radius: 8px; font-size: 24px; cursor: pointer; }
     body.dark .mobile-menu-btn { background: #4ADE80; color: #052E16; }
     .mobile-menu { display: none; position: fixed; top: 70px; right: 20px; width: 250px; background: #FFFFFF; box-shadow: 0 4px 12px rgba(0,0,0,0.2); border-radius: 12px; transition: all 0.3s; z-index: 1000; padding: 16px; opacity: 0; transform: translateY(-10px); pointer-events: none; }
@@ -132,38 +115,7 @@
   <div class="header">
     <div style="display: flex; align-items: center; gap: 16px;">
       <div class="logo">ManMoon</div>
-      <button class="pdf-btn" onclick="togglePdfMenu()" style="position: relative;">📄 Resources
-        <div class="pdf-menu" id="pdfMenu">
-          <div class="pdf-item">
-            <span class="pdf-title">📱 Android Studio Setup Guide</span>
-            <div class="pdf-actions">
-              <a href="pdf/android-studio-setup.pdf" target="_blank" class="pdf-action-btn view-btn">👁️ View</a>
-              <a href="pdf/android-studio-setup.pdf" download class="pdf-action-btn download-btn">⬇️ Download</a>
-            </div>
-          </div>
-          <div class="pdf-item">
-            <span class="pdf-title">✅ AdMob Approval Guide</span>
-            <div class="pdf-actions">
-              <a href="pdf/AdMob Approval Guide.pdf" target="_blank" class="pdf-action-btn view-btn">👁️ View</a>
-              <a href="pdf/AdMob Approval Guide.pdf" download class="pdf-action-btn download-btn">⬇️ Download</a>
-            </div>
-          </div>
-          <div class="pdf-item">
-            <span class="pdf-title">💰 Complete Ad Revenue Guide</span>
-            <div class="pdf-actions">
-              <a href="pdf/Complete Ad Revenue Guide.pdf" target="_blank" class="pdf-action-btn view-btn">👁️ View</a>
-              <a href="pdf/Complete Ad Revenue Guide.pdf" download class="pdf-action-btn download-btn">⬇️ Download</a>
-            </div>
-          </div>
-          <div class="pdf-item">
-            <span class="pdf-title">🏆 Google AdMob Revenue Guide</span>
-            <div class="pdf-actions">
-              <a href="pdf/Google AdMob Complete Revenue Guide.pdf" target="_blank" class="pdf-action-btn view-btn">👁️ View</a>
-              <a href="pdf/Google AdMob Complete Revenue Guide.pdf" download class="pdf-action-btn download-btn">⬇️ Download</a>
-            </div>
-          </div>
-        </div>
-      </button>
+      <button class="pdf-btn" onclick="window.location.href='resources.html'">📄 Resources</button>
     </div>
     <div class="user-info">
       <span class="user-name" id="userName">Welcome</span>
@@ -421,17 +373,6 @@
     window.toggleMobileMenu = function() {
       document.getElementById('mobileMenu').classList.toggle('active');
       document.getElementById('menuOverlay').classList.toggle('active');
-    };
-
-    window.togglePdfMenu = function() {
-      const pdfMenu = document.getElementById('pdfMenu');
-      pdfMenu.classList.toggle('active');
-      document.addEventListener('click', function closePdfMenu(e) {
-        if (!e.target.closest('.pdf-btn') && !e.target.closest('.pdf-menu')) {
-          pdfMenu.classList.remove('active');
-          document.removeEventListener('click', closePdfMenu);
-        }
-      });
     };
 
     window.logout = function() {

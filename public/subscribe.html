@@ -115,7 +115,7 @@
         By proceeding with payment, you agree to our <a href="terms.html" target="_blank">Terms of Service</a> and <a href="refund.html" target="_blank">Refund Policy</a>. Please read them carefully before purchasing.
       </div>
 
-      <button class="pay-btn" onclick="initiatePayment()">💳 Pay ₹100.00 with Cashfree</button>
+      <button class="pay-btn" onclick="initiatePayment()" id="payBtn">💳 Pay ₹100.00 with Cashfree</button>
     </div>
   </div>
 
@@ -156,6 +156,10 @@
     });
 
     window.initiatePayment = async function() {
+      const payBtn = document.getElementById('payBtn');
+      payBtn.disabled = true;
+      payBtn.textContent = '⏳ Processing...';
+
       if (!currentUser) {
         alert('Please sign in first');
         window.location.href = 'signin.html';
@@ -170,9 +174,12 @@
 
         if (!userEmail) {
           alert('Email not found. Please update your profile.');
+          payBtn.disabled = false;
+          payBtn.textContent = '💳 Pay ₹100.00 with Cashfree';
           return;
         }
 
+        console.log('Creating order for user:', currentUser.uid);
         const response = await fetch('https://manmoon-4.vercel.app/api/create-order', {
           method: 'POST',
           headers: { 
@@ -189,11 +196,12 @@
 
         if (!response.ok) {
           const errorData = await response.json();
+          console.error('API Error:', errorData);
           throw new Error(errorData.error || 'Server error');
         }
 
         const data = await response.json();
-        console.log('Order Response:', data);
+        console.log('Order created successfully:', data.order_id);
         
         if (!data.payment_session_id) {
           console.error('API Response:', data);
@@ -202,26 +210,25 @@
 
         if (typeof Cashfree === 'undefined') {
           alert('Payment system loading. Please try again.');
+          payBtn.disabled = false;
+          payBtn.textContent = '💳 Pay ₹100.00 with Cashfree';
           return;
         }
 
+        console.log('Opening Cashfree payment method...');
         const cashfree = Cashfree({ mode: 'production' });
         const checkoutOptions = {
           paymentSessionId: data.payment_session_id,
           redirectTarget: '_self'
         };
         
-        cashfree.checkout(checkoutOptions).then((response) => {
-          console.log('Payment response:', response);
-          window.location.href = 'success.html';
-        }).catch((error) => {
-          console.error('Payment failed:', error);
-          alert('Payment service error. Please try again.');
-        });
+        cashfree.checkout(checkoutOptions);
 
       } catch (error) {
         console.error('Payment error:', error);
-        alert('Failed to initiate payment. Please try again.');
+        alert('Failed to initiate payment: ' + error.message);
+        payBtn.disabled = false;
+        payBtn.textContent = '💳 Pay ₹100.00 with Cashfree';
       }
     };
   </script>

@@ -1,14 +1,14 @@
 import axios from 'axios';
 
 export default async function handler(req, res) {
-  // CORS headers
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST,OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
 
   if (req.method === 'OPTIONS') {
-    return res.status(200).end();
+    res.status(200).end();
+    return;
   }
 
   if (req.method !== 'POST') {
@@ -26,51 +26,52 @@ export default async function handler(req, res) {
     const SECRET_KEY = process.env.SECRET_KEY;
 
     if (!APP_ID || !SECRET_KEY) {
+      console.error('Missing API credentials');
       return res.status(500).json({ error: 'Server configuration error' });
     }
 
-    console.log('Verifying order:', orderId);
-    
+    console.log('Verifying payment for order:', orderId);
+
     const response = await axios.get(
-      `https://sandbox.cashfree.com/pg/orders/${orderId}`,
+      `https://api.cashfree.com/pg/orders/${orderId}`,
       {
         headers: {
           "x-api-version": "2023-08-01",
           "x-client-id": APP_ID,
           "x-client-secret": SECRET_KEY
-        }
+        },
+        timeout: 10000
       }
     );
 
+    console.log('Cashfree verification response:', response.data);
+
     const orderData = response.data;
-    console.log('Cashfree order response:', JSON.stringify(orderData));
-    
-    // STRICT VERIFICATION: Both conditions must be true
-    const isPaid = 
-      orderData.order_status === 'PAID' && 
-      orderData.payment_status === 'SUCCESS';
-    
-    console.log('Order status:', orderData.order_status);
-    console.log('Payment status:', orderData.payment_status);
-    console.log('Is paid (STRICT):', isPaid);
-    
+    const isPaid = orderData.order_status === 'PAID';
+
     return res.status(200).json({
-      orderId: orderData.order_id,
+      isPaid: isPaid,
       status: orderData.order_status,
       paymentStatus: orderData.payment_status,
+      orderId: orderData.order_id,
       amount: orderData.order_amount,
-      isPaid: isPaid
+      currency: orderData.order_currency
     });
 
   } catch (error) {
     console.error('Verification error:', error.message);
+    
     if (error.response) {
-      console.error('Cashfree error:', error.response.status, error.response.data);
+      console.error('Cashfree error:', error.response.data);
+      return res.status(error.response.status || 500).json({ 
+        error: error.response.data?.message || error.message,
+        isPaid: false
+      });
     }
+    
     return res.status(500).json({ 
-      error: 'Failed to verify payment',
-      isPaid: false,
-      details: error.message
+      error: error.message || 'Verification failed',
+      isPaid: false
     });
   }
 }

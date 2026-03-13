@@ -46,20 +46,6 @@
     body.dark .download-btn { background: #052E16; color: #4ADE80; border-color: #4ADE80; }
     .download-btn:hover { background: #14532D; color: #FFFFFF; }
     body.dark .download-btn:hover { background: #4ADE80; color: #052E16; }
-    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; }
-    .modal.active { display: flex; align-items: center; justify-content: center; }
-    .modal-content { background: #FFFFFF; width: 90%; height: 90%; border-radius: 12px; display: flex; flex-direction: column; max-width: 900px; }
-    body.dark .modal-content { background: #14532D; }
-    .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 16px; border-bottom: 1px solid #E5E7EB; }
-    body.dark .modal-header { border-bottom-color: #166534; }
-    .modal-title { font-size: 18px; font-weight: 600; color: #14532D; }
-    body.dark .modal-title { color: #4ADE80; }
-    .close-btn { background: #14532D; color: #FFFFFF; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; }
-    body.dark .close-btn { background: #4ADE80; color: #052E16; }
-    .close-btn:hover { background: #166534; }
-    body.dark .close-btn:hover { background: #86EFAC; }
-    .pdf-viewer { flex: 1; overflow: auto; }
-    .pdf-viewer embed { width: 100%; height: 100%; }
     footer { text-align: center; padding: 30px 20px; margin-top: 60px; border-top: 1px solid #D1D5DB; color: #166534; font-size: 14px; }
     body.dark footer { border-top-color: #166534; color: #86EFAC; }
     footer a { color: #14532D; text-decoration: none; margin: 0 8px; }
@@ -69,7 +55,6 @@
       h1 { font-size: 24px; }
       .pdf-grid { grid-template-columns: 1fr; }
       .pdf-card { padding: 16px; }
-      .modal-content { width: 95%; height: 95%; }
     }
   </style>
 </head>
@@ -93,7 +78,7 @@
         <div class="pdf-title">Android Studio Setup Guide</div>
         <p class="pdf-description">Complete step-by-step guide to install and configure Android Studio for app development.</p>
         <div class="pdf-actions">
-          <button class="pdf-btn view-btn" onclick="openPdfViewer('pdf/android-studio-setup.pdf', 'Android Studio Setup Guide')">👁️ View</button>
+          <a href="pdf/android-studio-setup.pdf" target="_blank" class="pdf-btn view-btn">👁️ View</a>
           <a href="pdf/android-studio-setup.pdf" download class="pdf-btn download-btn">⬇️ Download</a>
         </div>
       </div>
@@ -104,8 +89,8 @@
         <div class="pdf-title">AdMob Approval Guide</div>
         <p class="pdf-description">Learn how to get your app approved on Google AdMob and start earning revenue.</p>
         <div class="pdf-actions">
-          <button class="pdf-btn view-btn" onclick="openPdfViewer('pdf/AdMob Approval Guide.pdf', 'AdMob Approval Guide')">👁️ View</button>
-          <a href="pdf/AdMob Approval Guide.pdf" download class="pdf-btn download-btn">⬇️ Download</a>
+          <a href="pdf/AdMob-Approval-Guide.pdf" target="_blank" class="pdf-btn view-btn">👁️ View</a>
+          <a href="pdf/AdMob-Approval-Guide.pdf" download class="pdf-btn download-btn">⬇️ Download</a>
         </div>
       </div>
 
@@ -115,8 +100,8 @@
         <div class="pdf-title">Complete Ad Revenue Guide</div>
         <p class="pdf-description">Maximize your ad revenue with proven strategies and best practices for monetization.</p>
         <div class="pdf-actions">
-          <button class="pdf-btn view-btn" onclick="openPdfViewer('pdf/Complete Ad Revenue Guide.pdf', 'Complete Ad Revenue Guide')">👁️ View</button>
-          <a href="pdf/Complete Ad Revenue Guide.pdf" download class="pdf-btn download-btn">⬇️ Download</a>
+          <a href="pdf/Complete-Ad-Revenue-Guide.pdf" target="_blank" class="pdf-btn view-btn">👁️ View</a>
+          <a href="pdf/Complete-Ad-Revenue-Guide.pdf" download class="pdf-btn download-btn">⬇️ Download</a>
         </div>
       </div>
 
@@ -126,22 +111,9 @@
         <div class="pdf-title">Google AdMob Revenue Guide</div>
         <p class="pdf-description">Advanced techniques to optimize your Google AdMob earnings and grow your income.</p>
         <div class="pdf-actions">
-          <button class="pdf-btn view-btn" onclick="openPdfViewer('pdf/Google AdMob Complete Revenue Guide.pdf', 'Google AdMob Revenue Guide')">👁️ View</button>
-          <a href="pdf/Google AdMob Complete Revenue Guide.pdf" download class="pdf-btn download-btn">⬇️ Download</a>
+          <a href="pdf/Google-AdMob-Complete-Revenue-Guide.pdf" target="_blank" class="pdf-btn view-btn">👁️ View</a>
+          <a href="pdf/Google-AdMob-Complete-Revenue-Guide.pdf" download class="pdf-btn download-btn">⬇️ Download</a>
         </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- PDF Viewer Modal -->
-  <div class="modal" id="pdfModal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <div class="modal-title" id="pdfTitle">PDF Viewer</div>
-        <button class="close-btn" onclick="closePdfViewer()">✕ Close</button>
-      </div>
-      <div class="pdf-viewer">
-        <embed id="pdfEmbed" type="application/pdf">
       </div>
     </div>
   </div>
@@ -161,23 +133,6 @@
     if (localStorage.getItem('theme') === 'dark') {
       document.body.classList.add('dark');
     }
-
-    function openPdfViewer(pdfPath, title) {
-      document.getElementById('pdfTitle').textContent = title;
-      document.getElementById('pdfEmbed').src = pdfPath;
-      document.getElementById('pdfModal').classList.add('active');
-    }
-
-    function closePdfViewer() {
-      document.getElementById('pdfModal').classList.remove('active');
-      document.getElementById('pdfEmbed').src = '';
-    }
-
-    document.getElementById('pdfModal').addEventListener('click', function(e) {
-      if (e.target === this) {
-        closePdfViewer();
-      }
-    });
   </script>
 </body>
 </html>
