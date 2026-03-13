@@ -74,11 +74,8 @@ export default async function handler(req, res) {
         appId: APP_ID
       });
     } else {
-      console.error('No payment_session_id in response');
-      return res.status(500).json({ 
-        error: 'Invalid response from payment gateway',
-        details: response.data
-      });
+      console.error('No payment_session_id in response:', response.data);
+      return res.status(200).json(response.data);
     }
   } catch (error) {
     console.error('Payment error:', error.message);
