@@ -50,7 +50,7 @@
     </div>
 
     <div class="price-display">
-      <div class="price-amount">₹100.00</div>
+      <div class="price-amount">₹1.00</div>
       <div class="price-label">One-time payment • Lifetime access</div>
     </div>
 
@@ -99,7 +99,7 @@
     </div>
 
     <div id="paymentForm">
-      <button class="pay-button" onclick="proceedToPayment()">Pay ₹100.00 Now</button>
+      <button class="pay-button" onclick="proceedToPayment()">Pay ₹1.00 Now</button>
       <button class="cancel-button" onclick="goBack()">Cancel</button>
     </div>
 
@@ -154,7 +154,7 @@
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            amount: 100,
+            amount: 1,
             email: 'test@example.com',
             name: 'Test User',
             userId: 'test-user-123'
