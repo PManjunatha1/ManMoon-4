@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes">
+  <meta name="description" content="ManMoon Learning Resources - PDF Guides">
+  <title>Resources - ManMoon</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #F0FDF4; color: #052E16; min-height: 100vh; transition: background 0.3s, color 0.3s; }
+    body.dark { background: #052E16; color: #F0FDF4; }
+    .header { background: #FFFFFF; padding: 20px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); display: flex; justify-content: space-between; align-items: center; }
+    body.dark .header { background: #14532D; }
+    .logo { font-size: 24px; font-weight: 600; color: #14532D; display: flex; align-items: center; gap: 8px; cursor: pointer; }
+    body.dark .logo { color: #4ADE80; }
+    .logo::before { content: ''; width: 32px; height: 32px; background: url('image/image.png') center/contain no-repeat; display: inline-block; }
+    .header-buttons { display: flex; gap: 12px; align-items: center; }
+    .back-btn { padding: 8px 16px; background: #14532D; color: #FFFFFF; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; }
+    body.dark .back-btn { background: #4ADE80; color: #052E16; }
+    .back-btn:hover { background: #166534; }
+    body.dark .back-btn:hover { background: #86EFAC; }
+    .theme-toggle { padding: 8px 16px; background: #14532D; color: #FFFFFF; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; }
+    body.dark .theme-toggle { background: #4ADE80; color: #052E16; }
+    .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+    h1 { color: #14532D; font-size: 32px; margin-bottom: 12px; text-align: center; }
+    body.dark h1 { color: #4ADE80; }
+    .subtitle { text-align: center; color: #166534; font-size: 16px; margin-bottom: 40px; }
+    body.dark .subtitle { color: #86EFAC; }
+    .pdf-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
+    .pdf-card { background: #FFFFFF; padding: 24px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); transition: all 0.3s; }
+    body.dark .pdf-card { background: #14532D; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); }
+    .pdf-card:hover { transform: translateY(-5px); box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15); }
+    body.dark .pdf-card:hover { box-shadow: 0 8px 12px rgba(0, 0, 0, 0.4); }
+    .pdf-icon { font-size: 48px; margin-bottom: 16px; }
+    .pdf-title { font-size: 20px; font-weight: 600; color: #14532D; margin-bottom: 8px; }
+    body.dark .pdf-title { color: #4ADE80; }
+    .pdf-description { color: #166534; font-size: 14px; line-height: 1.6; margin-bottom: 20px; }
+    body.dark .pdf-description { color: #86EFAC; }
+    .pdf-actions { display: flex; gap: 12px; }
+    .pdf-btn { flex: 1; padding: 12px 16px; text-align: center; text-decoration: none; border-radius: 8px; font-size: 14px; font-weight: 600; transition: all 0.2s; border: none; cursor: pointer; }
+    .view-btn { background: #14532D; color: #FFFFFF; }
+    body.dark .view-btn { background: #4ADE80; color: #052E16; }
+    .view-btn:hover { background: #166534; }
+    body.dark .view-btn:hover { background: #86EFAC; }
+    .download-btn { background: #F0FDF4; color: #14532D; border: 2px solid #14532D; }
+    body.dark .download-btn { background: #052E16; color: #4ADE80; border-color: #4ADE80; }
+    .download-btn:hover { background: #14532D; color: #FFFFFF; }
+    body.dark .download-btn:hover { background: #4ADE80; color: #052E16; }
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; }
+    .modal.active { display: flex; align-items: center; justify-content: center; }
+    .modal-content { background: #FFFFFF; width: 90%; height: 90%; border-radius: 12px; display: flex; flex-direction: column; }
+    body.dark .modal-content { background: #14532D; }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 16px; border-bottom: 1px solid #E5E7EB; }
+    body.dark .modal-header { border-bottom-color: #166534; }
+    .modal-title { font-size: 18px; font-weight: 600; color: #14532D; }
+    body.dark .modal-title { color: #4ADE80; }
+    .close-btn { background: #14532D; color: #FFFFFF; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; }
+    body.dark .close-btn { background: #4ADE80; color: #052E16; }
+    .close-btn:hover { background: #166534; }
+    body.dark .close-btn:hover { background: #86EFAC; }
+    .pdf-viewer { flex: 1; overflow: auto; }
+    .pdf-viewer iframe { width: 100%; height: 100%; border: none; }
+    footer { text-align: center; padding: 30px 20px; margin-top: 60px; border-top: 1px solid #D1D5DB; color: #166534; font-size: 14px; }
+    body.dark footer { border-top-color: #166534; color: #86EFAC; }
+    footer a { color: #14532D; text-decoration: none; margin: 0 8px; }
+    body.dark footer a { color: #4ADE80; }
+    @media (max-width: 600px) {
+      .container { margin: 20px auto; }
+      h1 { font-size: 24px; }
+      .pdf-grid { grid-template-columns: 1fr; }
+      .pdf-card { padding: 16px; }
+      .modal-content { width: 95%; height: 95%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo" onclick="window.location.href='dashboard.html'">ManMoon</div>
+    <div class="header-buttons">
+      <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
+      <button class="back-btn" onclick="window.location.href='dashboard.html'">← Back to Dashboard</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <h1>📚 Learning Resources</h1>
+    <p class="subtitle">Download and view our comprehensive PDF guides</p>
+
+    <div class="pdf-grid">
+      <!-- PDF 1 -->
+      <div class="pdf-card">
+        <div class="pdf-icon">📱</div>
+        <div class="pdf-title">Android Studio Setup Guide</div>
+        <p class="pdf-description">Complete step-by-step guide to install and configure Android Studio for app development.</p>
+        <div class="pdf-actions">
+          <button class="pdf-btn view-btn" onclick="openPdfViewer('pdf/android-studio-setup.pdf', 'Android Studio Setup Guide')">👁️ View</button>
+          <a href="pdf/android-studio-setup.pdf" download class="pdf-btn download-btn">⬇️ Download</a>
+        </div>
+      </div>
+
+      <!-- PDF 2 -->
+      <div class="pdf-card">
+        <div class="pdf-icon">✅</div>
+        <div class="pdf-title">AdMob Approval Guide</div>
+        <p class="pdf-description">Learn how to get your app approved on Google AdMob and start earning revenue.</p>
+        <div class="pdf-actions">
+          <button class="pdf-btn view-btn" onclick="openPdfViewer('pdf/AdMob Approval Guide.pdf', 'AdMob Approval Guide')">👁️ View</button>
+          <a href="pdf/AdMob Approval Guide.pdf" download class="pdf-btn download-btn">⬇️ Download</a>
+        </div>
+      </div>
+
+      <!-- PDF 3 -->
+      <div class="pdf-card">
+        <div class="pdf-icon">💰</div>
+        <div class="pdf-title">Complete Ad Revenue Guide</div>
+        <p class="pdf-description">Maximize your ad revenue with proven strategies and best practices for monetization.</p>
+        <div class="pdf-actions">
+          <button class="pdf-btn view-btn" onclick="openPdfViewer('pdf/Complete Ad Revenue Guide.pdf', 'Complete Ad Revenue Guide')">👁️ View</button>
+          <a href="pdf/Complete Ad Revenue Guide.pdf" download class="pdf-btn download-btn">⬇️ Download</a>
+        </div>
+      </div>
+
+      <!-- PDF 4 -->
+      <div class="pdf-card">
+        <div class="pdf-icon">🏆</div>
+        <div class="pdf-title">Google AdMob Revenue Guide</div>
+        <p class="pdf-description">Advanced techniques to optimize your Google AdMob earnings and grow your income.</p>
+        <div class="pdf-actions">
+          <button class="pdf-btn view-btn" onclick="openPdfViewer('pdf/Google AdMob Complete Revenue Guide.pdf', 'Google AdMob Revenue Guide')">👁️ View</button>
+          <a href="pdf/Google AdMob Complete Revenue Guide.pdf" download class="pdf-btn download-btn">⬇️ Download</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PDF Viewer Modal -->
+  <div class="modal" id="pdfModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title" id="pdfTitle">PDF Viewer</div>
+        <button class="close-btn" onclick="closePdfViewer()">✕ Close</button>
+      </div>
+      <div class="pdf-viewer">
+        <iframe id="pdfFrame"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div>© 2026 ManMoon - Secure Learning Platform</div>
+    <div style="margin-top: 8px;">
+      <a href="privacy.html">Privacy Policy</a> | <a href="terms.html">Terms of Service</a> | <a href="contact.html">Contact Support</a>
+    </div>
+  </footer>
+
+  <script>
+    function toggleTheme() {
+      document.body.classList.toggle('dark');
+      localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+    }
+    if (localStorage.getItem('theme') === 'dark') {
+      document.body.classList.add('dark');
+    }
+
+    function openPdfViewer(pdfPath, title) {
+      document.getElementById('pdfTitle').textContent = title;
+      document.getElementById('pdfFrame').src = pdfPath;
+      document.getElementById('pdfModal').classList.add('active');
+    }
+
+    function closePdfViewer() {
+      document.getElementById('pdfModal').classList.remove('active');
+      document.getElementById('pdfFrame').src = '';
+    }
+
+    document.getElementById('pdfModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closePdfViewer();
+      }
+    });
+  </script>
+</body>
+</html>
