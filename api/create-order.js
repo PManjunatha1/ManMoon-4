@@ -34,7 +34,7 @@ export default async function handler(req, res) {
 
     const orderData = {
       order_id: orderId,
-      order_amount: parseFloat(amount || 100).toFixed(2),
+      order_amount: parseFloat(amount || 100),
       order_currency: "INR",
       customer_details: {
         customer_id: userId,

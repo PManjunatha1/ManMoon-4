@@ -196,7 +196,8 @@
         console.log('Order Response:', data);
         
         if (!data.payment_session_id) {
-          throw new Error('No payment session received');
+          console.error('API Response:', data);
+          throw new Error('No payment session received from server');
         }
 
         if (typeof Cashfree === 'undefined') {
