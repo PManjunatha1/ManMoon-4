@@ -115,7 +115,7 @@
         await updateDoc(doc(db, 'users', userId), {
           subscribed: true,
           paymentStatus: 'paid',
-          amountPaid: 100,
+          amountPaid: 1,
           paymentDate: new Date().toISOString(),
           orderId: orderId
         });
