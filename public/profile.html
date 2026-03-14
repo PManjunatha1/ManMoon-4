@@ -65,6 +65,11 @@
       background: #4ADE80;
       color: #052E16;
     }
+    .refresh-btn { display: none; position: fixed; top: 12px; right: 12px; width: 44px; height: 44px; background: #14532D; color: #FFFFFF; border: none; border-radius: 50%; cursor: pointer; font-size: 20px; z-index: 999; box-shadow: 0 2px 8px rgba(0,0,0,0.2); transition: all 0.3s; }
+    body.dark .refresh-btn { background: #4ADE80; color: #052E16; }
+    .refresh-btn:hover { transform: rotate(180deg); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+    .refresh-btn.spinning { animation: spin 1s linear infinite; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     .container {
       max-width: 800px;
       margin: 40px auto;
@@ -233,6 +238,7 @@
       color: #4ADE80;
     }
     @media (max-width: 600px) {
+      .refresh-btn { display: block !important; }
       .profile-card {
         padding: 24px;
       }
@@ -244,6 +250,7 @@
   </style>
 </head>
 <body>
+  <button class="refresh-btn" id="refreshBtn" onclick="refreshPage()" title="Refresh">🔄</button>
   <div class="header">
     <div class="logo">ManMoon</div>
     <a href="dashboard.html" class="back-btn">← Back to Dashboard</a>
@@ -447,9 +454,17 @@
         document.getElementById('lastSignIn').textContent = 'Just now';
       }
 
-      if (localStorage.getItem('theme') === 'dark') {
-        document.body.classList.add('dark');
-      }
+    window.refreshPage = function() {
+      const btn = document.getElementById('refreshBtn');
+      btn.classList.add('spinning');
+      setTimeout(() => {
+        location.reload();
+      }, 600);
+    };
+
+    if (localStorage.getItem('theme') === 'dark') {
+      document.body.classList.add('dark');
+    }
     });
   </script>
 </body>

@@ -23,6 +23,11 @@
     body.dark .pdf-btn:hover { background: #86EFAC; }
     .mobile-menu-btn { display: none; background: #14532D; color: #FFFFFF; border: none; padding: 8px 12px; border-radius: 8px; font-size: 22px; cursor: pointer; }
     body.dark .mobile-menu-btn { background: #4ADE80; color: #052E16; }
+    .refresh-btn { display: none; position: fixed; top: 12px; right: 12px; width: 44px; height: 44px; background: #14532D; color: #FFFFFF; border: none; border-radius: 50%; cursor: pointer; font-size: 20px; z-index: 999; box-shadow: 0 2px 8px rgba(0,0,0,0.2); transition: all 0.3s; }
+    body.dark .refresh-btn { background: #4ADE80; color: #052E16; }
+    .refresh-btn:hover { transform: rotate(180deg); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+    .refresh-btn.spinning { animation: spin 1s linear infinite; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     .mobile-menu { display: none; position: fixed; top: 60px; right: 10px; width: 85%; max-width: 280px; background: #FFFFFF; box-shadow: 0 4px 12px rgba(0,0,0,0.2); border-radius: 12px; transition: all 0.3s; z-index: 1000; padding: 12px; opacity: 0; transform: translateY(-10px); pointer-events: none; }
     body.dark .mobile-menu { background: #14532D; }
     .mobile-menu.active { opacity: 1; transform: translateY(0); pointer-events: auto; }
@@ -86,6 +91,7 @@
       .nav-button { flex: 1 1 calc(50% - 4px); padding: 12px 14px; font-size: 13px; }
     }
     @media (max-width: 768px) {
+      .refresh-btn { display: block !important; }
       .user-info > button:not(.mobile-menu-btn) { display: none; }
       .mobile-menu-btn { display: block !important; }
       .mobile-menu { display: block !important; }
@@ -103,6 +109,7 @@
       .nav-button { padding: 11px 12px; font-size: 12px; }
     }
     @media (max-width: 480px) {
+      .refresh-btn { width: 40px; height: 40px; font-size: 18px; top: 10px; right: 10px; }
       .header { padding: 10px; gap: 8px; }
       .logo { font-size: 16px; gap: 4px; }
       .logo::before { width: 20px; height: 20px; }
@@ -135,6 +142,7 @@
   </style>
 </head>
 <body>
+  <button class="refresh-btn" id="refreshBtn" onclick="refreshPage()" title="Refresh">🔄</button>
   <div class="menu-overlay" id="menuOverlay" onclick="toggleMobileMenu()"></div>
   <div class="mobile-menu" id="mobileMenu">
     <div class="mobile-menu-header">
@@ -417,6 +425,14 @@
     window.toggleTheme = function() {
       document.body.classList.toggle('dark');
       localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+    };
+    
+    window.refreshPage = function() {
+      const btn = document.getElementById('refreshBtn');
+      btn.classList.add('spinning');
+      setTimeout(() => {
+        location.reload();
+      }, 600);
     };
     
     if (localStorage.getItem('theme') === 'dark') {
