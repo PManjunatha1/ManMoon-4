@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="ManMoon Secure Login">
+  <title>Sign In - ManMoon</title>
+  <link rel="stylesheet" href="modern-styles.css">
+  <style>
+    /* AUTH PAGE STYLES */
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 1rem;
+    }
+
+    .auth-container {
+      width: 100%;
+      max-width: 450px;
+      animation: fadeInUp 0.6s ease-out;
+    }
+
+    .auth-card {
+      background: white;
+      border-radius: 16px;
+      padding: 2.5rem;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    body.dark .auth-card {
+      background: #14532D;
+      border-color: rgba(74, 222, 128, 0.1);
+    }
+
+    .auth-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .auth-logo {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .auth-card h1 {
+      font-size: 1.8rem;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+
+    body.dark .auth-card h1 {
+      color: var(--primary-light);
+    }
+
+    .auth-subtitle {
+      color: #666;
+      font-size: 0.95rem;
+    }
+
+    body.dark .auth-subtitle {
+      color: #D0D0D0;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      color: var(--text-light);
+      margin-bottom: 0.5rem;
+      font-size: 0.95rem;
+    }
+
+    body.dark .form-group label {
+      color: var(--text-dark);
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 0.9rem 1rem;
+      border: 2px solid #E5E7EB;
+      border-radius: 10px;
+      font-size: 1rem;
+      transition: all 0.3s;
+      background: white;
+      color: var(--text-light);
+    }
+
+    body.dark .form-group input {
+      background: #052E16;
+      color: var(--text-dark);
+      border-color: #166534;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(20, 83, 45, 0.1);
+    }
+
+    body.dark .form-group input:focus {
+      border-color: var(--primary-light);
+      box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.1);
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.2rem;
+      color: #666;
+    }
+
+    body.dark .password-toggle {
+      color: #D0D0D0;
+    }
+
+    .password-group {
+      position: relative;
+    }
+
+    .btn-signin {
+      width: 100%;
+      padding: 1rem;
+      background: linear-gradient(135deg, var(--primary) 0%, #0F3919 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 1rem;
+      box-shadow: var(--shadow);
+    }
+
+    .btn-signin:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .btn-signin:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .auth-links {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 1.5rem;
+      font-size: 0.9rem;
+    }
+
+    .auth-links a {
+      color: var(--primary);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+
+    body.dark .auth-links a {
+      color: var(--primary-light);
+    }
+
+    .auth-links a:hover {
+      text-decoration: underline;
+    }
+
+    .divider {
+      text-align: center;
+      margin: 2rem 0;
+      color: #999;
+      font-size: 0.9rem;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: '';
+      display: inline-block;
+      width: 40%;
+      height: 1px;
+      background: #E5E7EB;
+      vertical-align: middle;
+    }
+
+    body.dark .divider::before,
+    body.dark .divider::after {
+      background: #166534;
+    }
+
+    .divider span {
+      margin: 0 0.5rem;
+    }
+
+    .signup-link {
+      text-align: center;
+      margin-top: 2rem;
+      color: #666;
+    }
+
+    body.dark .signup-link {
+      color: #D0D0D0;
+    }
+
+    .signup-link a {
+      color: var(--primary);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    body.dark .signup-link a {
+      color: var(--primary-light);
+    }
+
+    .security-badge {
+      background: #F0FDF4;
+      padding: 1rem;
+      border-radius: 10px;
+      text-align: center;
+      font-size: 0.85rem;
+      color: #166534;
+      margin-bottom: 1.5rem;
+      border: 1px solid #DCFCE7;
+    }
+
+    body.dark .security-badge {
+      background: #052E16;
+      border-color: #166534;
+      color: #86EFAC;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .auth-card {
+        padding: 1.5rem;
+      }
+
+      .auth-card h1 {
+        font-size: 1.5rem;
+      }
+
+      .form-group input {
+        padding: 0.8rem 0.9rem;
+        font-size: 16px;
+      }
+
+      .btn-signin {
+        padding: 0.9rem;
+        font-size: 0.95rem;
+      }
+
+      .auth-links {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .signup-link {
+        margin-top: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-container">
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="auth-logo">🌙</div>
+        <h1>Welcome Back</h1>
+        <p class="auth-subtitle">Sign in to your ManMoon account</p>
+      </div>
+
+      <div class="security-badge">
+        🔒 Secure Login • SSL Encrypted • Your data is safe
+      </div>
+
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" name="email" placeholder="you@example.com" required>
+        </div>
+
+        <div class="form-group password-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" placeholder="••••••••" required>
+          <button type="button" class="password-toggle" onclick="togglePassword()">👁️</button>
+        </div>
+
+        <button type="submit" class="btn-signin">Sign In</button>
+      </form>
+
+      <div class="auth-links">
+        <a href="forgot-password.html">Forgot password?</a>
+        <a href="index.html">Back to Home</a>
+      </div>
+
+      <div class="divider"><span>or</span></div>
+
+      <div class="signup-link">
+        Don't have an account? <a href="signup.html">Create one now</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function togglePassword() {
+      const input = document.getElementById('password');
+      const btn = document.querySelector('.password-toggle');
+      if (input.type === 'password') {
+        input.type = 'text';
+        btn.textContent = '🙈';
+      } else {
+        input.type = 'password';
+        btn.textContent = '👁️';
+      }
+    }
+
+    function toggleTheme() {
+      document.body.classList.toggle('dark');
+      localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+    }
+
+    if (localStorage.getItem('theme') === 'dark') {
+      document.body.classList.add('dark');
+    }
+
+    if (localStorage.getItem('userName')) {
+      window.location.href = 'dashboard.html';
+    }
+  </script>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCfM85FQhBDmonkh4w57rAfpwNB9afXLdQ",
+      authDomain: "manmoon-12.firebaseapp.com",
+      projectId: "manmoon-12",
+      storageBucket: "manmoon-12.firebasestorage.app",
+      messagingSenderId: "484001203292",
+      appId: "1:484001203292:web:f136fedfb8cb0b4c3a9299",
+      measurementId: "G-6YEJJ98KVM"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const btn = document.querySelector('.btn-signin');
+
+      btn.disabled = true;
+      btn.textContent = '🔐 Signing In...';
+
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        const userDoc = await getDoc(doc(db, 'users', user.uid));
+
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+
+          localStorage.setItem('userName', userData.name);
+          localStorage.setItem('userEmail', userData.email);
+          localStorage.setItem('userId', user.uid);
+          localStorage.setItem('lastSignIn', new Date().toISOString());
+
+          alert('Welcome back, ' + userData.name + '!');
+
+          if (userData.paymentStatus === 'paid') {
+            window.location.href = 'dashboard.html';
+          } else {
+            window.location.href = 'subscribe.html';
+          }
+        } else {
+          alert('User data not found. Please contact support.');
+          btn.disabled = false;
+          btn.textContent = 'Sign In';
+        }
+      } catch (error) {
+        let errorMessage = 'Failed to sign in.';
+
+        if (error.code === 'auth/user-not-found') {
+          errorMessage = 'No account found. Please sign up.';
+        } else if (error.code === 'auth/wrong-password') {
+          errorMessage = 'Incorrect password.';
+        } else if (error.code === 'auth/invalid-email') {
+          errorMessage = 'Invalid email address.';
+        }
+
+        alert(errorMessage);
+        btn.disabled = false;
+        btn.textContent = 'Sign In';
+      }
+    });
+  </script>
+</body>
+</html>
