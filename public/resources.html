@@ -126,6 +126,15 @@
   </footer>
 
   <script>
+    // Check authentication
+    window.addEventListener('DOMContentLoaded', () => {
+      const userId = localStorage.getItem('userId');
+      const userName = localStorage.getItem('userName');
+      if (!userId || !userName) {
+        window.location.href = 'signin.html';
+      }
+    });
+
     function toggleTheme() {
       document.body.classList.toggle('dark');
       localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');

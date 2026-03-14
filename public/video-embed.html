@@ -87,6 +87,13 @@
     let currentLevel = '';
 
     function loadVideo() {
+      const userId = localStorage.getItem('userId');
+      const userName = localStorage.getItem('userName');
+      if (!userId || !userName) {
+        window.location.href = 'signin.html';
+        return;
+      }
+      
       const urlParams = new URLSearchParams(window.location.search);
       const vidParam = urlParams.get('vid');
       const currentVid = vidParam ? parseInt(vidParam) : 0;

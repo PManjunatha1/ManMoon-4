@@ -348,6 +348,15 @@
     checkPaymentStatus();
     verifySession();
 
+    // Redirect if not authenticated
+    window.addEventListener('DOMContentLoaded', () => {
+      const userId = localStorage.getItem('userId');
+      const userName = localStorage.getItem('userName');
+      if (!userId || !userName) {
+        window.location.href = 'signin.html';
+      }
+    });
+
     let deferredPrompt;
 
     window.addEventListener('DOMContentLoaded', () => {
