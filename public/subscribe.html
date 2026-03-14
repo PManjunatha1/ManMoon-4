@@ -8,20 +8,21 @@
   <title>Subscribe - ManMoon Learning Platform</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: system-ui, -apple-system, sans-serif; background: #F0FDF4; color: #052E16; min-height: 100vh; transition: background 0.3s, color 0.3s; }
-    body.dark { background: #052E16; color: #F0FDF4; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%); color: #052E16; min-height: 100vh; transition: background 0.3s, color 0.3s; line-height: 1.6; }
+    body.dark { background: linear-gradient(135deg, #052E16 0%, #166534 100%); color: #F0FDF4; }
     .top-nav { position: fixed; top: 0; left: 0; right: 0; display: flex; justify-content: space-between; padding: 20px; background: transparent; z-index: 100; }
     .back-link { color: #14532D; text-decoration: none; font-weight: 500; font-size: 16px; }
     body.dark .back-link { color: #4ADE80; }
     body.dark .theme-toggle { background: #4ADE80; color: #052E16; }
     .container { max-width: 700px; margin: 100px auto 40px; padding: 0 20px; }
-    .card { background: #FFFFFF; padding: 40px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); }
-    body.dark .card { background: #14532D; }
+    .card { background: #FFFFFF; padding: 40px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); border: 1px solid rgba(0, 0, 0, 0.05); }
+    body.dark .card { background: #14532D; border-color: rgba(74, 222, 128, 0.1); }
     h1 { font-size: 32px; color: #14532D; margin-bottom: 12px; text-align: center; }
     body.dark h1 { color: #4ADE80; }
     .subtitle { text-align: center; color: #166534; font-size: 16px; margin-bottom: 30px; }
     body.dark .subtitle { color: #86EFAC; }
-    .price-box { background: #F0FDF4; padding: 30px; border-radius: 12px; text-align: center; margin-bottom: 30px; border: 2px solid #14532D; }
+    .price-box { background: #F0FDF4; padding: 30px; border-radius: 16px; text-align: center; margin-bottom: 30px; border: 2px solid #14532D; transition: all 0.3s ease; }
+    .price-box:hover { transform: scale(1.02); box-shadow: 0 10px 30px rgba(20, 83, 45, 0.15); }
     body.dark .price-box { background: #052E16; border-color: #4ADE80; }
     .price { font-size: 48px; font-weight: 700; color: #14532D; margin-bottom: 8px; }
     body.dark .price { color: #4ADE80; }
@@ -47,9 +48,10 @@
     body.dark .agreement { background: #052E16; color: #86EFAC; }
     .agreement a { color: #14532D; text-decoration: underline; font-weight: 600; }
     body.dark .agreement a { color: #4ADE80; }
-    .pay-btn { width: 100%; padding: 16px; background: #14532D; color: #FFFFFF; border: none; border-radius: 8px; font-size: 18px; font-weight: 600; cursor: pointer; margin-bottom: 16px; }
-    body.dark .pay-btn { background: #4ADE80; color: #052E16; }
-    .pay-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .pay-btn { width: 100%; padding: 16px; background: linear-gradient(135deg, #14532D 0%, #0F3919 100%); color: #FFFFFF; border: none; border-radius: 12px; font-size: 18px; font-weight: 600; cursor: pointer; margin-bottom: 16px; transition: all 0.3s ease; box-shadow: 0 10px 30px rgba(20, 83, 45, 0.2); }
+    .pay-btn:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(20, 83, 45, 0.3); }
+    body.dark .pay-btn { background: linear-gradient(135deg, #4ADE80 0%, #22C55E 100%); color: #052E16; }
+    .pay-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
     footer { text-align: center; padding: 30px 20px; margin-top: 40px; border-top: 1px solid #D1D5DB; color: #166534; font-size: 13px; }
     body.dark footer { border-top-color: #166534; color: #86EFAC; }
     footer a { color: #14532D; text-decoration: none; margin: 0 8px; }
