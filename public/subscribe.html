@@ -83,7 +83,7 @@
       <div class="test-mode-badge">🔴 PRODUCTION MODE - Real payments enabled</div>
 
       <div class="price-box">
-        <div class="price">₹100.00</div>
+        <div class="price">₹152.00</div>
         <div class="price-label">One-time payment • Lifetime access</div>
       </div>
 
@@ -104,7 +104,7 @@
       </div>
 
       <div class="info-box">
-        <strong>💡 Why ₹100?</strong>
+        <strong>💡 Why ₹152?</strong>
         <p>We believe quality education should be affordable. This one-time payment gives you lifetime access to all our courses and future updates.</p>
       </div>
 
@@ -117,7 +117,7 @@
         By proceeding with payment, you agree to our <a href="terms.html" target="_blank">Terms of Service</a> and <a href="refund.html" target="_blank">Refund Policy</a>. Please read them carefully before purchasing.
       </div>
 
-      <button class="pay-btn" onclick="window.location.href='payment.html'" id="payBtn">💳 Pay ₹100.00 with Cashfree</button>
+      <button class="pay-btn" onclick="window.location.href='payment.html'" id="payBtn">💳 Pay ₹152.00 with Cashfree</button>
     </div>
   </div>
 
@@ -177,7 +177,7 @@
         if (!userEmail) {
           alert('Email not found. Please update your profile.');
           payBtn.disabled = false;
-          payBtn.textContent = '💳 Pay ₹100.00 with Cashfree';
+          payBtn.textContent = '💳 Pay ₹152.00 with Cashfree';
           return;
         }
 
@@ -189,7 +189,7 @@
             'Accept': 'application/json'
           },
           body: JSON.stringify({
-            amount: 100,
+            amount: 152,
             email: userEmail,
             name: userName,
             userId: currentUser.uid
@@ -230,7 +230,7 @@
         console.error('Payment error:', error);
         alert('Failed to initiate payment: ' + error.message);
         payBtn.disabled = false;
-        payBtn.textContent = '💳 Pay ₹100.00 with Cashfree';
+        payBtn.textContent = '💳 Pay ₹152.00 with Cashfree';
       }
     };
   </script>
