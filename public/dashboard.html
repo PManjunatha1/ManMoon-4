@@ -298,52 +298,65 @@
     const db = getFirestore(app);
 
     async function checkPaymentStatus() {
-      const userId = localStorage.getItem('userId');
-      if (!userId) {
-        window.location.href = 'signin.html';
-        return;
-      }
-      
-      const userDoc = await getDoc(doc(db, 'users', userId));
-      if (userDoc.exists()) {
-        const userData = userDoc.data();
-        const storedToken = localStorage.getItem('sessionToken');
-        const dbToken = userData.sessionToken;
-        
-        if (storedToken !== dbToken) {
-          localStorage.clear();
-          alert('Your session has been invalidated. You were signed in on another device.');
+      try {
+        const userId = localStorage.getItem('userId');
+        if (!userId) {
           window.location.href = 'signin.html';
           return;
         }
         
-        if (userData.paymentStatus !== 'paid') {
-          window.location.replace('subscribe.html');
+        const userDoc = await getDoc(doc(db, 'users', userId));
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          const storedToken = localStorage.getItem('sessionToken');
+          const dbToken = userData.sessionToken;
+          
+          if (storedToken !== dbToken) {
+            localStorage.clear();
+            alert('Your session has been invalidated. You were signed in on another device.');
+            window.location.href = 'signin.html';
+            return;
+          }
+          
+          if (userData.paymentStatus !== 'paid') {
+            window.location.replace('subscribe.html');
+            return;
+          }
+        } else {
+          window.location.href = 'signin.html';
           return;
         }
-      } else {
-        window.location.href = 'signin.html';
+        
+        document.body.classList.add('verified');
+      } catch (e) {
+        console.error('Auth check failed:', e);
+        document.body.classList.add('verified');
       }
-      
-      document.body.classList.add('verified');
     }
 
     async function verifySession() {
-      const userId = localStorage.getItem('userId');
-      const sessionToken = localStorage.getItem('sessionToken');
-      
-      if (!userId || !sessionToken) {
-        localStorage.clear();
-        window.location.href = 'signin.html';
-        return;
-      }
-      
-      const userDoc = await getDoc(doc(db, 'users', userId));
-      if (!userDoc.exists() || userDoc.data().sessionToken !== sessionToken) {
-        localStorage.clear();
-        window.location.href = 'signin.html';
+      try {
+        const userId = localStorage.getItem('userId');
+        const sessionToken = localStorage.getItem('sessionToken');
+        
+        if (!userId || !sessionToken) {
+          localStorage.clear();
+          window.location.href = 'signin.html';
+          return;
+        }
+        
+        const userDoc = await getDoc(doc(db, 'users', userId));
+        if (!userDoc.exists() || userDoc.data().sessionToken !== sessionToken) {
+          localStorage.clear();
+          window.location.href = 'signin.html';
+        }
+      } catch (e) {
+        console.error('Session verify failed:', e);
       }
     }
+
+    // Fallback: show page after 5s if Firebase hangs
+    setTimeout(() => document.body.classList.add('verified'), 5000);
 
     checkPaymentStatus();
     verifySession();
