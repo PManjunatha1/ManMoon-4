@@ -240,6 +240,25 @@
     </div>
   </div>
 
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+    const app = initializeApp({ apiKey: "AIzaSyCfM85FQhBDmonkh4w57rAfpwNB9afXLdQ", authDomain: "manmoon-12.firebaseapp.com", projectId: "manmoon-12", storageBucket: "manmoon-12.firebasestorage.app", messagingSenderId: "484001203292", appId: "1:484001203292:web:f136fedfb8cb0b4c3a9299" });
+    const db = getFirestore(app);
+    (async () => {
+      const userId = localStorage.getItem('userId');
+      const sessionToken = localStorage.getItem('sessionToken');
+      if (!userId || !sessionToken) { localStorage.clear(); window.location.href = 'signin.html'; return; }
+      try {
+        const userDoc = await getDoc(doc(db, 'users', userId));
+        if (!userDoc.exists()) { localStorage.clear(); window.location.href = 'signin.html'; return; }
+        const userData = userDoc.data();
+        if (userData.sessionToken !== sessionToken) { localStorage.clear(); window.location.href = 'signin.html'; return; }
+        if (userData.paymentStatus !== 'paid') { window.location.replace('subscribe.html'); return; }
+      } catch (e) { window.location.href = 'signin.html'; }
+    })();
+  </script>
+
   <script>
     const videos = [
       {

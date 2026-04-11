@@ -333,7 +333,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
+    import { getAuth, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -416,18 +416,33 @@
       }, 3000);
     };
 
-    // Load user profile data
+    // Check payment access then load profile
     window.addEventListener('DOMContentLoaded', async () => {
+      const userId = localStorage.getItem('userId');
+      const sessionToken = localStorage.getItem('sessionToken');
+
+      if (!userId || !sessionToken) {
+        localStorage.clear();
+        window.location.href = 'signin.html';
+        return;
+      }
+
+      try {
+        const userDoc = await getDoc(doc(db, 'users', userId));
+        if (!userDoc.exists()) { localStorage.clear(); window.location.href = 'signin.html'; return; }
+        const userData = userDoc.data();
+        if (userData.sessionToken !== sessionToken) { localStorage.clear(); window.location.href = 'signin.html'; return; }
+        if (userData.paymentStatus !== 'paid') { window.location.replace('subscribe.html'); return; }
+      } catch (e) {
+        window.location.href = 'signin.html';
+        return;
+      }
+
       const userName = localStorage.getItem('userName');
       const userEmail = localStorage.getItem('userEmail');
       const userPaid = localStorage.getItem('userPaid');
       const firstSignIn = localStorage.getItem('firstSignIn');
       const lastSignIn = localStorage.getItem('lastSignIn');
-
-      if (!userName) {
-        window.location.href = 'signin.html';
-        return;
-      }
 
       document.getElementById('userName').textContent = userName;
       document.getElementById('userEmail').textContent = userEmail;
