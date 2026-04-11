@@ -7,7 +7,7 @@
   <meta name="author" content="ManMoon">
   <meta name="robots" content="noindex, nofollow">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com/firebasejs/; style-src 'self' 'unsafe-inline'; connect-src 'self' https://*.firebaseapp.com https://*.firestore.googleapis.com https://*.googleapis.com https://identitytoolkit.googleapis.com">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com/firebasejs/; style-src 'self' 'unsafe-inline'; connect-src 'self' https://*.firebaseapp.com https://*.firestore.googleapis.com https://*.googleapis.com https://identitytoolkit.googleapis.com https://firestore.googleapis.com https://*.google.com">
   <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
   <meta http-equiv="X-XSS-Protection" content="1; mode=block">
   <title>Secure Sign Up - ManMoon Learning Platform</title>
@@ -384,7 +384,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-analytics.js";
     import { getAuth, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc, collection } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, getDoc, runTransaction } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCfM85FQhBDmonkh4w57rAfpwNB9afXLdQ",
@@ -489,28 +489,25 @@
           displayName: name
         });
         
-        const counterDoc = await getDoc(doc(db, 'system', 'userCounter'));
-        let nextId = 1;
-        if (counterDoc.exists()) {
-          nextId = counterDoc.data().count + 1;
-        }
-        const userId = String(nextId).padStart(6, '0');
-        
-        await setDoc(doc(db, 'system', 'userCounter'), { count: nextId });
-        
+        const counterRef = doc(db, 'system', 'userCounter');
+        let userId;
+        await runTransaction(db, async (transaction) => {
+          const counterDoc = await transaction.get(counterRef);
+          const nextId = counterDoc.exists() ? counterDoc.data().count + 1 : 1;
+          userId = String(nextId).padStart(6, '0');
+          transaction.set(counterRef, { count: nextId });
+        });
+
+        const now = new Date().toISOString();
         await setDoc(doc(db, 'users', user.uid), {
           name: name,
           email: email,
-          paid: false,
-          createdAt: new Date().toISOString(),
-          firstSignIn: new Date().toISOString(),
-          lastSignIn: new Date().toISOString(),
-          role: 'student'
-        });
-        
-        await setDoc(doc(db, 'users', user.uid, 'users', userId), {
           userId: userId,
-          createdAt: new Date().toISOString()
+          paymentStatus: 'unpaid',
+          createdAt: now,
+          firstSignIn: now,
+          lastSignIn: now,
+          role: 'student'
         });
         
         localStorage.setItem('userName', name);
