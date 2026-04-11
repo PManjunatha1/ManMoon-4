@@ -15,6 +15,7 @@
       box-sizing: border-box;
     }
     body {
+      display: none;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background: linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%);
       color: #052E16;
@@ -321,10 +322,6 @@
   </div>
 
   <script type="module">
-    if (localStorage.getItem('userName')) {
-      window.location.href = 'dashboard.html';
-    }
-
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-analytics.js";
     import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
@@ -344,11 +341,25 @@
     const analytics = getAnalytics(app);
     const auth = getAuth(app);
     const db = getFirestore(app);
-    
-    function generateDeviceId() {
-      const id = 'device_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
-      localStorage.setItem('deviceId', id);
-      return id;
+
+    // If already logged in, check payment and redirect without showing signin page
+    const existingUserId = localStorage.getItem('userId');
+    const existingToken = localStorage.getItem('sessionToken');
+    if (existingUserId && existingToken) {
+      getDoc(doc(db, 'users', existingUserId)).then(userDoc => {
+        if (userDoc.exists() && userDoc.data().sessionToken === existingToken) {
+          if (userDoc.data().paymentStatus === 'paid') {
+            window.location.replace('dashboard.html');
+          } else {
+            window.location.replace('subscribe.html');
+          }
+        } else {
+          localStorage.clear();
+          document.body.style.display = 'flex';
+        }
+      }).catch(() => { document.body.style.display = 'flex'; });
+    } else {
+      document.body.style.display = 'flex';
     }
 
     function generateSessionToken() {
@@ -398,7 +409,6 @@
           await setDoc(doc(db, 'users', user.uid), {...updateData, sessionToken: sessionToken});
           
           console.log('Payment Status:', userData.paymentStatus);
-          alert('Welcome back, ' + userData.name + '!');
           if (userData.paymentStatus === 'paid') {
             window.location.href = 'dashboard.html';
           } else {
