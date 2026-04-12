@@ -7,7 +7,7 @@
   <title>Resources - ManMoon</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: system-ui, -apple-system, sans-serif; background: #F0FDF4; color: #052E16; min-height: 100vh; transition: background 0.3s, color 0.3s; }
+    body { display: none; font-family: system-ui, -apple-system, sans-serif; background: #F0FDF4; color: #052E16; min-height: 100vh; transition: background 0.3s, color 0.3s; }
     body.dark { background: #052E16; color: #F0FDF4; }
     .header { background: #FFFFFF; padding: 20px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); display: flex; justify-content: space-between; align-items: center; }
     body.dark .header { background: #14532D; }
@@ -128,39 +128,28 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyCfM85FQhBDmonkh4w57rAfpwNB9afXLdQ",
-      authDomain: "manmoon-12.firebaseapp.com",
-      projectId: "manmoon-12",
-      storageBucket: "manmoon-12.firebasestorage.app",
-      messagingSenderId: "484001203292",
-      appId: "1:484001203292:web:f136fedfb8cb0b4c3a9299",
-      measurementId: "G-6YEJJ98KVM"
-    };
-    const app = initializeApp(firebaseConfig);
+    const app = initializeApp({ apiKey: "AIzaSyCfM85FQhBDmonkh4w57rAfpwNB9afXLdQ", authDomain: "manmoon-12.firebaseapp.com", projectId: "manmoon-12", storageBucket: "manmoon-12.firebasestorage.app", messagingSenderId: "484001203292", appId: "1:484001203292:web:f136fedfb8cb0b4c3a9299" });
     const db = getFirestore(app);
-
-    window.addEventListener('DOMContentLoaded', async () => {
+    (async () => {
       const userId = localStorage.getItem('userId');
       const sessionToken = localStorage.getItem('sessionToken');
-      if (!userId || !sessionToken) { localStorage.clear(); window.location.href = 'signin.html'; return; }
+      if (!userId || !sessionToken) { localStorage.clear(); window.location.replace('signin.html'); return; }
       try {
         const userDoc = await getDoc(doc(db, 'users', userId));
-        if (!userDoc.exists()) { localStorage.clear(); window.location.href = 'signin.html'; return; }
+        if (!userDoc.exists()) { localStorage.clear(); window.location.replace('signin.html'); return; }
         const userData = userDoc.data();
-        if (userData.sessionToken !== sessionToken) { localStorage.clear(); window.location.href = 'signin.html'; return; }
+        if (userData.sessionToken !== sessionToken) { localStorage.clear(); window.location.replace('signin.html'); return; }
         if (userData.paymentStatus !== 'paid') { window.location.replace('subscribe.html'); return; }
-      } catch (e) {
-        window.location.href = 'signin.html';
-      }
-    });
+      } catch (e) { window.location.replace('signin.html'); return; }
+      document.body.style.display = 'block';
+      if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark');
+    })();
   </script>
+
+  <script>
+    function toggleTheme() {
       document.body.classList.toggle('dark');
       localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
-    }
-    if (localStorage.getItem('theme') === 'dark') {
-      document.body.classList.add('dark');
     }
   </script>
 </body>

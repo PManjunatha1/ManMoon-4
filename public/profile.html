@@ -12,6 +12,7 @@
       box-sizing: border-box;
     }
     body {
+      display: none;
       font-family: system-ui, -apple-system, sans-serif;
       background: #F0FDF4;
       color: #052E16;
@@ -416,27 +417,20 @@
       }, 3000);
     };
 
-    // Check payment access then load profile
-    window.addEventListener('DOMContentLoaded', async () => {
+    (async () => {
       const userId = localStorage.getItem('userId');
       const sessionToken = localStorage.getItem('sessionToken');
-
-      if (!userId || !sessionToken) {
-        localStorage.clear();
-        window.location.href = 'signin.html';
-        return;
-      }
-
+      if (!userId || !sessionToken) { localStorage.clear(); window.location.replace('signin.html'); return; }
       try {
         const userDoc = await getDoc(doc(db, 'users', userId));
-        if (!userDoc.exists()) { localStorage.clear(); window.location.href = 'signin.html'; return; }
+        if (!userDoc.exists()) { localStorage.clear(); window.location.replace('signin.html'); return; }
         const userData = userDoc.data();
-        if (userData.sessionToken !== sessionToken) { localStorage.clear(); window.location.href = 'signin.html'; return; }
+        if (userData.sessionToken !== sessionToken) { localStorage.clear(); window.location.replace('signin.html'); return; }
         if (userData.paymentStatus !== 'paid') { window.location.replace('subscribe.html'); return; }
-      } catch (e) {
-        window.location.href = 'signin.html';
-        return;
-      }
+      } catch (e) { window.location.replace('signin.html'); return; }
+
+      document.body.style.display = 'block';
+      if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark');
 
       const userName = localStorage.getItem('userName');
       const userEmail = localStorage.getItem('userEmail');
@@ -467,19 +461,7 @@
       } else {
         document.getElementById('lastSignIn').textContent = 'Just now';
       }
-
-    window.refreshPage = function() {
-      const btn = document.getElementById('refreshBtn');
-      btn.classList.add('spinning');
-      setTimeout(() => {
-        location.reload();
-      }, 600);
-    };
-
-    if (localStorage.getItem('theme') === 'dark') {
-      document.body.classList.add('dark');
-    }
-    });
+    })();
   </script>
 </body>
 </html>

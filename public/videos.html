@@ -14,6 +14,7 @@
       box-sizing: border-box;
     }
     body {
+      display: none;
       font-family: system-ui, -apple-system, sans-serif;
       background: #F0FDF4;
       color: #052E16;
@@ -255,7 +256,9 @@
         const userData = userDoc.data();
         if (userData.sessionToken !== sessionToken) { localStorage.clear(); window.location.href = 'signin.html'; return; }
         if (userData.paymentStatus !== 'paid') { window.location.replace('subscribe.html'); return; }
-      } catch (e) { window.location.href = 'signin.html'; }
+      } catch (e) { window.location.replace('signin.html'); return; }
+      document.body.style.display = 'block';
+      if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark');
     })();
   </script>
 
