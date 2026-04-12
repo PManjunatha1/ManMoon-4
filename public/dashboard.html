@@ -7,10 +7,8 @@
   <title>Dashboard - ManMoon</title>
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <style>
-    body { display: none; }
-    body.verified { display: block; }
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: system-ui, -apple-system, sans-serif; background: #F0FDF4; color: #052E16; min-height: 100vh; transition: background 0.3s, color 0.3s; }
+    body { display: none; font-family: system-ui, -apple-system, sans-serif; background: #F0FDF4; color: #052E16; min-height: 100vh; transition: background 0.3s, color 0.3s; }
     body.dark { background: #052E16; color: #F0FDF4; }
     .header { background: #FFFFFF; padding: 16px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
     body.dark .header { background: #14532D; }
@@ -303,7 +301,7 @@
 
       if (!userId || !sessionToken) {
         localStorage.clear();
-        window.location.href = 'signin.html';
+        window.location.replace('signin.html');
         return;
       }
 
@@ -311,7 +309,7 @@
         const userDoc = await getDoc(doc(db, 'users', userId));
         if (!userDoc.exists()) {
           localStorage.clear();
-          window.location.href = 'signin.html';
+          window.location.replace('signin.html');
           return;
         }
 
@@ -319,8 +317,7 @@
 
         if (userData.sessionToken !== sessionToken) {
           localStorage.clear();
-          alert('Your session has been invalidated. You were signed in on another device.');
-          window.location.href = 'signin.html';
+          window.location.replace('signin.html');
           return;
         }
 
@@ -329,22 +326,20 @@
           return;
         }
 
-        document.body.classList.add('verified');
+        // Paid user — show page
+        document.getElementById('userName').textContent = 'Welcome, ' + (localStorage.getItem('userName') || '');
+        updateAllProgress();
+        document.body.style.display = 'block';
+
       } catch (e) {
         console.error('Access check failed:', e);
-        window.location.href = 'signin.html';
+        window.location.replace('signin.html');
       }
     }
 
     checkAccess();
 
     let deferredPrompt;
-
-    window.addEventListener('DOMContentLoaded', () => {
-      const userName = localStorage.getItem('userName');
-      document.getElementById('userName').textContent = `Welcome, ${userName}`;
-      updateAllProgress();
-    });
 
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
