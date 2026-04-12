@@ -342,12 +342,14 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // If already logged in, check payment and redirect without showing signin page
+    // If already logged in, redirect without showing signin page
     const existingUserId = localStorage.getItem('userId');
     const existingToken = localStorage.getItem('sessionToken');
     if (existingUserId && existingToken) {
       getDoc(doc(db, 'users', existingUserId)).then(userDoc => {
         if (userDoc.exists() && userDoc.data().sessionToken === existingToken) {
+          // Replace entire history stack so back button never returns to signin
+          history.replaceState(null, '', 'signin.html');
           if (userDoc.data().paymentStatus === 'paid') {
             window.location.replace('dashboard.html');
           } else {
@@ -410,9 +412,9 @@
           
           console.log('Payment Status:', userData.paymentStatus);
           if (userData.paymentStatus === 'paid') {
-            window.location.href = 'dashboard.html';
+            window.location.replace('dashboard.html');
           } else {
-            window.location.href = 'subscribe.html';
+            window.location.replace('subscribe.html');
           }
         } else {
           alert('User data not found. Please contact support.');
