@@ -20,7 +20,6 @@
       background: linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%);
       color: #052E16;
       min-height: 100vh;
-      display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
@@ -358,10 +357,21 @@
         } else {
           localStorage.clear();
           document.body.style.display = 'flex';
+          document.body.style.flexDirection = 'column';
+          document.body.style.alignItems = 'center';
+          document.body.style.justifyContent = 'center';
         }
-      }).catch(() => { document.body.style.display = 'flex'; });
+      }).catch(() => {
+        document.body.style.display = 'flex';
+        document.body.style.flexDirection = 'column';
+        document.body.style.alignItems = 'center';
+        document.body.style.justifyContent = 'center';
+      });
     } else {
       document.body.style.display = 'flex';
+      document.body.style.flexDirection = 'column';
+      document.body.style.alignItems = 'center';
+      document.body.style.justifyContent = 'center';
     }
 
     function generateSessionToken() {

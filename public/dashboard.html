@@ -329,11 +329,22 @@
         // Paid user — show page
         document.getElementById('userName').textContent = 'Welcome, ' + (localStorage.getItem('userName') || '');
         updateAllProgress();
+        if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark');
         document.body.style.display = 'block';
 
       } catch (e) {
-        console.error('Access check failed:', e);
-        window.location.replace('signin.html');
+        // Firestore error — if localStorage looks valid, show page anyway
+        // Do NOT redirect — that causes signin↔dashboard loop
+        const userId = localStorage.getItem('userId');
+        const userName = localStorage.getItem('userName');
+        if (userId && userName) {
+          document.getElementById('userName').textContent = 'Welcome, ' + userName;
+          updateAllProgress();
+          if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark');
+          document.body.style.display = 'block';
+        } else {
+          window.location.replace('signin.html');
+        }
       }
     }
 

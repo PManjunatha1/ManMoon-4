@@ -249,12 +249,12 @@
     (async () => {
       const userId = localStorage.getItem('userId');
       const sessionToken = localStorage.getItem('sessionToken');
-      if (!userId || !sessionToken) { localStorage.clear(); window.location.href = 'signin.html'; return; }
+      if (!userId || !sessionToken) { localStorage.clear(); window.location.replace('signin.html'); return; }
       try {
         const userDoc = await getDoc(doc(db, 'users', userId));
-        if (!userDoc.exists()) { localStorage.clear(); window.location.href = 'signin.html'; return; }
+        if (!userDoc.exists()) { localStorage.clear(); window.location.replace('signin.html'); return; }
         const userData = userDoc.data();
-        if (userData.sessionToken !== sessionToken) { localStorage.clear(); window.location.href = 'signin.html'; return; }
+        if (userData.sessionToken !== sessionToken) { localStorage.clear(); window.location.replace('signin.html'); return; }
         if (userData.paymentStatus !== 'paid') { window.location.replace('subscribe.html'); return; }
       } catch (e) { window.location.replace('signin.html'); return; }
       document.body.style.display = 'block';

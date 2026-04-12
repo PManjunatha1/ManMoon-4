@@ -17,7 +17,7 @@
     .message { font-size: 16px; color: #166534; margin-top: 20px; }
     .error { color: #DC2626; }
     .success { color: #16A34A; }
-    .btn { display: none; margin: 20px auto; padding: 12px 30px; background: #14532D; color: white; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; text-decoration: none; display: inline-block; }
+    .btn { margin: 20px auto; padding: 12px 30px; background: #14532D; color: white; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; text-decoration: none; display: inline-block; }
     .btn:hover { background: #166534; }
     .btn.hidden { display: none; }
   </style>
@@ -34,12 +34,9 @@
   </div>
 
   <script>
-    let userId = null;
-    let orderId = null;
-
     const urlParams = new URLSearchParams(window.location.search);
-    userId = urlParams.get('userId');
-    orderId = urlParams.get('orderId');
+    const userId = urlParams.get('userId');
+    const orderId = urlParams.get('orderId');
 
     const iconEl = document.getElementById('icon');
     const titleEl = document.getElementById('title');
@@ -47,87 +44,64 @@
     const messageEl = document.getElementById('message');
     const loaderEl = document.getElementById('loader');
 
-    function updateUI(icon, title, subtitle, message, messageClass = '') {
+    function updateUI(icon, title, subtitle, message, cls = '') {
       iconEl.textContent = icon;
       titleEl.textContent = title;
       subtitleEl.textContent = subtitle;
       messageEl.textContent = message;
-      messageEl.className = 'message ' + messageClass;
+      messageEl.className = 'message ' + cls;
     }
 
     async function verifyAndUpdateSubscription() {
       try {
-        // Validate required parameters
         if (!orderId || !userId) {
-          console.error('Missing orderId or userId');
-          updateUI('❌', 'Invalid Request', 'Missing payment information', 'Redirecting to subscription page...', 'error');
+          updateUI('❌', 'Invalid Request', 'Missing payment information', 'Redirecting...', 'error');
           loaderEl.style.display = 'none';
-          setTimeout(() => {
-            window.location.href = 'subscribe.html';
-          }, 2000);
+          setTimeout(() => window.location.replace('subscribe.html'), 2000);
           return;
         }
 
-        console.log('Starting payment verification for order:', orderId);
-        updateUI('⏳', 'Verifying Payment...', 'Please wait while we confirm your payment', 'Checking with payment gateway...');
+        updateUI('⏳', 'Verifying Payment...', 'Please wait', 'Checking with payment gateway...');
 
-        // Call verification endpoint
         const verifyResponse = await fetch('/api/verify-payment', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ orderId })
         });
 
-        console.log('Verification response status:', verifyResponse.status);
         const verifyData = await verifyResponse.json();
-        console.log('Verification data:', verifyData);
 
-        // STRICT CHECK: Payment must be PAID
         if (!verifyData.isPaid) {
-          console.warn('Payment verification FAILED');
-          console.warn('Order status:', verifyData.status);
-          console.warn('Payment status:', verifyData.paymentStatus);
-          
           updateUI('❌', 'Payment Not Completed', 'Your payment was not processed', 'Click below to try again', 'error');
           loaderEl.style.display = 'none';
           document.getElementById('retryBtn').classList.remove('hidden');
           return;
         }
 
-        console.log('Payment verification PASSED - updating Firebase');
         updateUI('✅', 'Payment Verified!', 'Updating your account...', 'Setting up your subscription...', 'success');
-        
-        // Initialize Firebase
+
         const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
         const { getFirestore, doc, updateDoc } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
-        
-        // Fetch Firebase config from secure API
+
         const configResponse = await fetch('/api/get-firebase-config');
-        if (!configResponse.ok) {
-          throw new Error('Failed to fetch Firebase config');
-        }
+        if (!configResponse.ok) throw new Error('Failed to fetch Firebase config');
         const firebaseConfig = await configResponse.json();
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Update user subscription in Firebase
         await updateDoc(doc(db, 'users', userId), {
           subscribed: true,
           paymentStatus: 'paid',
-          amountPaid: 100,
+          amountPaid: 152,
           paymentDate: new Date().toISOString(),
           orderId: orderId
         });
-        
-        console.log('Firebase updated successfully');
+
         updateUI('✅', 'Payment Successful!', 'Thank you for your purchase', 'Redirecting to your dashboard...', 'success');
         loaderEl.style.display = 'none';
         document.getElementById('successBtn').classList.remove('hidden');
-        
-        setTimeout(() => {
-          window.location.href = 'dashboard.html';
-        }, 3000);
+        setTimeout(() => window.location.replace('dashboard.html'), 3000);
 
       } catch (error) {
         console.error('Error during verification:', error);
@@ -137,7 +111,6 @@
       }
     }
 
-    // Start verification immediately
     verifyAndUpdateSubscription();
   </script>
 </body>

@@ -6,7 +6,7 @@
   <title>Secure Payment - ManMoon</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: system-ui, -apple-system, sans-serif; background: #F0FDF4; color: #052E16; padding: 20px; }
+    body { display: none; font-family: system-ui, -apple-system, sans-serif; background: #F0FDF4; color: #052E16; padding: 20px; }
     .container { max-width: 500px; margin: 0 auto; }
     .header { text-align: center; margin-bottom: 30px; }
     .header h1 { color: #14532D; font-size: 28px; margin-bottom: 8px; }
@@ -133,7 +133,9 @@
     onAuthStateChanged(auth, (user) => {
       currentUser = user;
       if (!user) {
-        window.location.href = 'signin.html';
+        window.location.replace('signin.html');
+      } else {
+        document.body.style.display = 'block';
       }
     });
 
